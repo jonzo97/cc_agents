@@ -892,3 +892,79 @@ mcu-competitive-analysis/
 - Fixed objection handler text generation bug
 - Generated accurate strategic intelligence report
 
+
+---
+
+## Agent Test: Builder Agent (2025-10-08 Evening)
+
+**Test**: Implement validation scorer module
+**Result**: ❌ FAILED - Output token limit exceeded
+
+**Issue**: Builder agent response exceeded 32000 token maximum
+- Same issue as Scout agent earlier
+- Agent generated too much output
+- No partial result returned
+
+**Impact**: Cannot use Builder agent for code generation tasks
+**Recommendation**: Manual implementation required
+
+### Root Cause Analysis
+
+Builder agent had **no output token limits** and verbose reporting:
+1. **No token cap** - Resource limits said "unlimited" operations
+2. **Verbose progress reporting** - Full JSON structures (200+ tokens each)
+3. **Code echoing** - Showed code in responses instead of just using Write tool
+4. **No conciseness guidance** - Agent didn't know to be brief
+
+### Fixes Implemented (2025-10-08 Evening)
+
+**✅ Fixed Builder Agent Output Token Limit Issue**
+
+**Changes to `~/.claude/agents/builder.md`**:
+
+1. **Added CRITICAL WARNING at top** (after line 15):
+   - ⚠️ Output Token Limit section
+   - Absolute requirement: <8,000 tokens per response
+   - How to stay under: Use Write tools, artifacts, concise reporting
+   - Consequence: Exceeding 32k = complete failure
+
+2. **Updated Resource Limits** (line 671):
+   - **Max Output Tokens:** 8,000 tokens per response (NEW)
+   - Added "Output Token Management" subsection:
+     - Use file operations, not response text
+     - Use artifacts for large outputs (>50 lines)
+     - Concise progress reporting
+     - What to do when approaching limit
+
+3. **Replaced Verbose Progress Reporting** (line 278):
+   - **Before**: Full JSON objects (200+ tokens)
+   - **After**: "⏳ Builder Progress: 5/12 tasks complete, tests passing"
+   - Progress reports now <100 tokens each
+   - Database logging happens silently (don't echo)
+
+4. **Added Token Management Best Practices** (line 703):
+   - **Write, Don't Echo**: Use tools, don't paste code in responses
+   - **Artifacts for Large Output**: Code >50 lines → artifact
+   - **Minimal Progress Updates**: "✓ 5/12 complete" not verbose explanations
+   - **Summarize, Don't List**: "✓ 15 tests passing" not listing each
+   - **Report Blockers Only**: Brief blocker description only
+
+5. **Added Token Budget Guidelines**:
+   - Per task update: <20 tokens
+   - Per 5-task checkpoint: <100 tokens
+   - Per error/blocker: <50 tokens
+   - Final completion: <200 tokens
+   - **Total response: <8,000 tokens**
+
+**Expected Impact**:
+- **Before**: 32,000+ tokens, complete failure, zero output
+- **After**: <8,000 tokens per response, successful completion
+- **Method**: Concise reporting, artifacts for code, no echoing
+
+**Next Test**: Re-test Builder on validation scorer module with fixes
+
+**Action Items**:
+- [x] Investigate Builder agent verbosity ✅ FIXED
+- [x] Add output token limit configuration ✅ FIXED (8k limit)
+- [ ] Test Builder with fixes on focused task
+
