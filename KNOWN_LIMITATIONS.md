@@ -1,41 +1,86 @@
 # Known Limitations v2.2.0-alpha
 
-## ✅ What Actually Works
+**Last Updated**: 2025-10-08 (Post Phase 2 Testing)
 
-1. **Slash Commands** - 5 commands in `~/.claude/commands/`
-   - `/feedback` - Performance analysis
-   - `/research <topic>` - Research Agent
-   - `/scout-explore` - Scout exploration
-   - `/workflow-status` - Active workflows
-   - `/compact-status` - Context usage
+## ✅ What Actually Works (TESTED)
 
-2. **Agent Prompts** - All 6 agents configured
-   - Scout, Research, Planner, Builder, Context Manager, Orchestrator
-   - Prompts are well-designed and should work
+1. **Slash Commands** - 5 commands in `~/.claude/commands/` ✅ VERIFIED
+   - `/feedback` - Performance analysis ✅ TESTED (generates actionable insights)
+   - `/research <topic>` - Research Agent ✅ TESTED (excellent 0.85 confidence reports)
+   - `/scout-explore` - Scout exploration ✅ TESTED (comprehensive codebase analysis)
+   - `/workflow-status` - Active workflows ✅ TESTED (queries database successfully)
+   - `/compact-status` - Context usage ✅ TESTED (shows usage recommendations)
 
-3. **Database Schema** - SQLite coordination DB ready
-4. **Serena LSP** - Tested, working (from Phase 2.5)
-5. **Documentation** - Comprehensive guides
-6. **Setup Script** - Portable to new projects
+2. **Research Agent** - ✅ TESTED & WORKING
+   - Generates 3-5 research questions as designed
+   - Uses WebSearch/WebFetch effectively (Perplexity not needed but supported)
+   - Produces comprehensive reports with citations
+   - Confidence scoring works (0.85 on Max for Live MIDI test)
+   - 5-minute execution time as expected
 
-## ❌ Not Yet Implemented
+3. **Scout Agent** - ✅ TESTED & WORKING
+   - Follows exploration workflow correctly
+   - Generates comprehensive codebase reports
+   - Includes confidence scores and recommendations
+   - Falls back gracefully when Serena unavailable
+   - NOTE: Can hallucinate structure if not careful
+
+4. **Database Infrastructure** - ✅ TESTED & WORKING
+   - SQLite database exists with proper schema
+   - 8 tables created (workflows, handoffs, events, artifacts, etc.)
+   - Python sqlite3 queries work perfectly
+   - Contains real workflow data (9 workflows from previous testing)
+
+5. **Feedback Mechanism** - ✅ TESTED & WORKING (KILLER FEATURE)
+   - Queries database for performance metrics
+   - Identifies critical issues (e.g., missing confidence scores)
+   - Generates actionable recommendations
+   - Creates data-driven improvement loop
+
+6. **Documentation** - Comprehensive guides
+7. **Setup Script** - Portable to new projects
+8. **Serena LSP** - Connected (some activation issues)
+
+## 🔴 Critical Issues Found (Phase 2 Testing)
+
+### 1. **Confidence Score Logging** - BROKEN 🔴
+   - **Issue**: 100% of handoffs (11/11) have NULL confidence scores
+   - **Impact**: Cannot analyze handoff quality or auto-trigger research
+   - **Root Cause**: Agents not logging confidence to database
+   - **Status**: Needs immediate fix
+   - **Priority**: CRITICAL
+
+### 2. **Builder Agent Reliability** - PROBLEMATIC ⚠️
+   - **Issue**: 62.5% failure rate (5 out of 8 workflows failed)
+   - **Impact**: Building phase unreliable
+   - **Likely Causes**: Timeout issues, error handling gaps
+   - **Status**: Needs investigation
+   - **Priority**: HIGH
+
+### 3. **Serena Project Activation** - BROKEN 🔴
+   - **Issue**: Fails with 'language' key error
+   - **Impact**: Cannot use Serena tools in agents
+   - **Status**: Needs debugging
+   - **Priority**: MEDIUM (agents work without it)
+
+## ❌ Not Yet Tested
 
 ### High Priority (Needs Testing)
 
-1. **Research Agent** - Untested
-   - Prompt exists, should work
-   - Perplexity integration unverified
+1. **Planner Agent** - UNTESTED
+   - No workflows found in database
+   - Prompt exists and looks good
    - Need real-world test
 
-2. **Orchestrator Intent Detection** - Theoretical
-   - Relies on Claude interpreting prompts correctly
-   - Auto-triggering unverified
-   - Needs testing
+2. **Orchestrator Auto-Triggering** - UNTESTED
+   - Intent detection relies on Claude interpretation
+   - Auto-research trigger unverified
+   - Database shows 1 successful orchestrator workflow
 
-3. **Agent Coordination** - Uncertain
-   - Handoff protocol documented
-   - No verification agents actually coordinate
-   - Database logging unverified
+3. **Context Manager Auto-Compaction** - UNTESTED
+   - Database shows 2 emergency compacts occurred
+   - Auto-compaction logic unverified
+   - Manual compaction works
 
 ### Medium Priority (Documented but Not Real)
 
@@ -81,28 +126,93 @@
 - **v2.2.0-beta** 🔜 After testing
 - **v2.2.0-stable** 🔜 After real-world validation
 
-## 🎯 Immediate Testing Needed
+## 🎯 Next Steps (Post Phase 2)
 
-1. Try `/research Max for Live MIDI` - Does it work?
-2. Try "Explore this codebase" - Does Scout trigger?
-3. Check `~/.claude/memory.db` - Does it have data?
-4. Try `/feedback` - Does it query the database?
+### Immediate Fixes (This Week)
 
-## 💡 What Makes This Still Valuable
+1. **Fix Confidence Score Logging** 🔴 CRITICAL
+   - Update all agent prompts to include confidence in handoff logs
+   - Test database insertion
+   - Validate confidence scores are recorded
 
-Even with limitations:
-- **Design is solid** - Guides future development
-- **Slash commands work** - Real utility
-- **Setup script** - Portable
-- **Documentation** - Learning resource
-- **Base system works** - Serena integration proven
-- **Feedback mechanism** - Will drive improvement
+2. **Investigate Builder Failures** ⚠️ HIGH
+   - Review error handling in builder.md
+   - Check timeout settings
+   - Test in isolation
 
-## 🚀 Path to Production
+3. **Debug Serena Activation** 🔴 MEDIUM
+   - Investigate 'language' key error
+   - Test Serena tools in agent context
+   - Document workarounds if needed
 
-1. **Test** (Tonight) - Verify what works
-2. **Fix** (This week) - Address failures
-3. **Iterate** (Ongoing) - Feedback loop
-4. **Validate** (Month) - Real-world use
+### Testing Priorities
 
-Honesty is the best policy! This is a strong alpha, not a stable release.
+4. **Test Planner Agent** (untested)
+5. **Test Orchestrator auto-triggering** (theoretical)
+6. **Real-world dogfooding** on actual project
+7. **Install Perplexity MCP** (optional enhancement)
+
+## 💡 Phase 2 Validation Summary
+
+✅ **Major Wins**:
+- Research Agent works excellently (0.85 confidence, comprehensive reports)
+- Scout Agent produces great codebase analysis
+- Feedback mechanism is a **killer feature** - identifies real issues
+- Database infrastructure solid and queryable
+- All slash commands functional
+
+🔴 **Critical Issues**:
+- Confidence scores not being logged (100% NULL)
+- Builder agent unreliable (62.5% failure rate)
+- Serena activation failing
+
+🧪 **Untested**:
+- Planner Agent
+- Orchestrator auto-triggering
+- Real-world workflows
+
+## 📊 Version Status Update
+
+- **v2.2.0-design** ✅ Complete (excellent architecture)
+- **v2.2.0-alpha** ✅ CURRENT - Phase 2 testing complete
+  - Research Agent: ✅ Working
+  - Scout Agent: ✅ Working
+  - Feedback: ✅ Working
+  - Confidence logging: 🔴 Broken
+  - Builder: ⚠️ Problematic
+- **v2.2.0-beta** 🔜 After fixes (confidence logging, Builder reliability)
+- **v2.2.0-stable** 🔜 After real-world validation
+
+## 🚀 Path to Beta
+
+1. **Fix Critical Issues** (This Week)
+   - Confidence score logging
+   - Builder reliability
+   - Serena activation
+
+2. **Test Untested Components** (This Week)
+   - Planner Agent
+   - Orchestrator auto-triggering
+
+3. **Real-World Validation** (Next Week)
+   - Use on actual project
+   - Collect new feedback data
+   - Iterate based on findings
+
+4. **Beta Release** (End of Week)
+   - All critical issues fixed
+   - All agents tested
+   - Feedback loop validated
+
+## 📈 Success Metrics for Beta
+
+- Confidence scores: 100% logged (currently 0%)
+- Builder success rate: >80% (currently 37.5%)
+- All 6 agents tested in real workflows
+- Positive feedback from dogfooding
+
+---
+
+**Phase 2 Testing Completed**: 2025-10-08
+**See**: FEEDBACK_HISTORY.md for detailed analysis
+**Next**: Fix confidence logging, test on real project
