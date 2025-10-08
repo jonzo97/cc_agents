@@ -1,0 +1,669 @@
+[
+  {
+    "scenario": "empty_project",
+    "success": true,
+    "data": {
+      "workflow_id": "wf_20251006_214152_a26240",
+      "status": "awaiting_approval",
+      "handoffs": [
+        {
+          "from": "scout",
+          "to": "planner",
+          "workflow_id": "wf_20251006_214152_a26240",
+          "phase": "plan",
+          "summary": "empty_project: unknown, unknown, confidence 0.30",
+          "data": {
+            "project_type": "unknown",
+            "tech_stack": [],
+            "architecture_pattern": "unknown",
+            "key_files": [
+              "README.md"
+            ],
+            "dependencies": {},
+            "structure": {
+              "src_files": 0,
+              "test_files": 0
+            },
+            "unknowns": [
+              "No source files found",
+              "Project structure unclear"
+            ],
+            "recommendations": [],
+            "confidence": 0.3,
+            "exploration_time_seconds": 0.0,
+            "timeout_occurred": false
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Analyze Scout findings",
+            "Create implementation plan",
+            "Assess risks and complexity"
+          ],
+          "confidence": 0.3,
+          "warnings": [
+            "Low confidence - research recommended"
+          ],
+          "timestamp": "2025-10-06T21:41:52.794139",
+          "metadata": {
+            "token_count": 100,
+            "execution_time_seconds": 0.0
+          }
+        },
+        {
+          "from": "planner",
+          "to": "orchestrator",
+          "workflow_id": "wf_20251006_214152_a26240",
+          "phase": "plan",
+          "summary": "Plan ready: 4 tasks, 1.3h, high complexity",
+          "data": {
+            "task_count": 4,
+            "total_estimate_hours": 1.3,
+            "complexity": "high",
+            "approach": "experimental",
+            "risks_identified": 3,
+            "risks": [
+              {
+                "id": "risk_001",
+                "description": "Low confidence in project understanding",
+                "category": "knowledge",
+                "likelihood": "high",
+                "impact": "high",
+                "mitigation": "Conduct deep research before implementation",
+                "owner": "planner",
+                "status": "open"
+              },
+              {
+                "id": "risk_002",
+                "description": "2 unknowns identified",
+                "category": "technical",
+                "likelihood": "medium",
+                "impact": "medium",
+                "mitigation": "Address unknowns through research and experimentation",
+                "owner": "planner",
+                "status": "open"
+              },
+              {
+                "id": "risk_003",
+                "description": "Tech stack unclear",
+                "category": "architectural",
+                "likelihood": "high",
+                "impact": "high",
+                "mitigation": "Investigate before proceeding",
+                "owner": "planner",
+                "status": "open"
+              }
+            ],
+            "checkpoints": 2,
+            "checkpoint_details": [
+              {
+                "name": "Checkpoint 1",
+                "after_task": "Research relevant technologies",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              },
+              {
+                "name": "Checkpoint 2",
+                "after_task": "Set up development environment",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              }
+            ],
+            "resource_budget": {
+              "time_estimate": {
+                "optimistic": "0.9 hours",
+                "realistic": "1.3 hours",
+                "pessimistic": "2.0 hours"
+              },
+              "token_budget": {
+                "scout": 5000,
+                "planner": 8000,
+                "builder": 20000,
+                "total": 33000,
+                "buffer": 20000
+              }
+            },
+            "requires_user_approval": true,
+            "approval_rationale": "High complexity with 3 risks requires careful review"
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Present plan to user for approval",
+            "Address user concerns if any",
+            "Hand off to Builder upon approval"
+          ],
+          "confidence": 0.49999999999999994,
+          "warnings": [
+            "high complexity requires careful execution",
+            "3 risks identified"
+          ],
+          "timestamp": "2025-10-06T21:41:52.794260",
+          "metadata": {
+            "token_count": 469
+          }
+        }
+      ],
+      "research_triggered": true,
+      "approval_required": true
+    }
+  },
+  {
+    "scenario": "legacy_codebase",
+    "success": true,
+    "data": {
+      "workflow_id": "wf_20251006_214152_f4cc4a",
+      "status": "awaiting_approval",
+      "handoffs": [
+        {
+          "from": "scout",
+          "to": "planner",
+          "workflow_id": "wf_20251006_214152_f4cc4a",
+          "phase": "plan",
+          "summary": "legacy_codebase: web_app, AngularJS 1.x, Bower, confidence 0.75",
+          "data": {
+            "project_type": "web_app",
+            "tech_stack": [
+              "AngularJS 1.x",
+              "Bower"
+            ],
+            "architecture_pattern": "unknown",
+            "key_files": [
+              "bower.json",
+              "README.md"
+            ],
+            "dependencies": {},
+            "structure": {
+              "src_files": 0,
+              "test_files": 0
+            },
+            "unknowns": [
+              "Build system (Grunt assumed)",
+              "No test framework detected"
+            ],
+            "recommendations": [
+              "Consider TypeScript for type safety"
+            ],
+            "confidence": 0.75,
+            "exploration_time_seconds": 0.0,
+            "timeout_occurred": false
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Analyze Scout findings",
+            "Create implementation plan",
+            "Assess risks and complexity"
+          ],
+          "confidence": 0.75,
+          "warnings": [],
+          "timestamp": "2025-10-06T21:41:52.794367",
+          "metadata": {
+            "token_count": 127,
+            "execution_time_seconds": 0.0
+          }
+        },
+        {
+          "from": "planner",
+          "to": "orchestrator",
+          "workflow_id": "wf_20251006_214152_f4cc4a",
+          "phase": "plan",
+          "summary": "Plan ready: 3 tasks, 1.2h, medium complexity",
+          "data": {
+            "task_count": 3,
+            "total_estimate_hours": 1.2,
+            "complexity": "medium",
+            "approach": "greenfield",
+            "risks_identified": 1,
+            "risks": [
+              {
+                "id": "risk_001",
+                "description": "2 unknowns identified",
+                "category": "technical",
+                "likelihood": "medium",
+                "impact": "medium",
+                "mitigation": "Address unknowns through research and experimentation",
+                "owner": "planner",
+                "status": "open"
+              }
+            ],
+            "checkpoints": 1,
+            "checkpoint_details": [
+              {
+                "name": "Checkpoint 1",
+                "after_task": "Create development plan",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              }
+            ],
+            "resource_budget": {
+              "time_estimate": {
+                "optimistic": "0.8 hours",
+                "realistic": "1.2 hours",
+                "pessimistic": "1.8 hours"
+              },
+              "token_budget": {
+                "scout": 5000,
+                "planner": 8000,
+                "builder": 15000,
+                "total": 28000,
+                "buffer": 20000
+              }
+            },
+            "requires_user_approval": true,
+            "approval_rationale": "1 risks identified that need approval"
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Present plan to user for approval",
+            "Address user concerns if any",
+            "Hand off to Builder upon approval"
+          ],
+          "confidence": 0.9,
+          "warnings": [
+            "1 risks identified"
+          ],
+          "timestamp": "2025-10-06T21:41:52.794411",
+          "metadata": {
+            "token_count": 271
+          }
+        }
+      ],
+      "research_triggered": false,
+      "approval_required": true
+    }
+  },
+  {
+    "scenario": "max_plugin",
+    "success": true,
+    "data": {
+      "workflow_id": "wf_20251006_214152_0a9b2b",
+      "status": "awaiting_approval",
+      "handoffs": [
+        {
+          "from": "scout",
+          "to": "planner",
+          "workflow_id": "wf_20251006_214152_0a9b2b",
+          "phase": "plan",
+          "summary": "max_plugin: unknown, Max/MSP, confidence 0.30",
+          "data": {
+            "project_type": "unknown",
+            "tech_stack": [
+              "Max/MSP"
+            ],
+            "architecture_pattern": "unknown",
+            "key_files": [
+              "README.md"
+            ],
+            "dependencies": {},
+            "structure": {
+              "src_files": 0,
+              "test_files": 0
+            },
+            "unknowns": [
+              "Build process unclear",
+              "MIDI routing implementation",
+              "Deployment workflow",
+              "No source files found",
+              "Project structure unclear"
+            ],
+            "recommendations": [],
+            "confidence": 0.3,
+            "exploration_time_seconds": 0.0,
+            "timeout_occurred": false
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Analyze Scout findings",
+            "Create implementation plan",
+            "Assess risks and complexity"
+          ],
+          "confidence": 0.3,
+          "warnings": [
+            "Low confidence - research recommended"
+          ],
+          "timestamp": "2025-10-06T21:41:52.794477",
+          "metadata": {
+            "token_count": 127,
+            "execution_time_seconds": 0.0
+          }
+        },
+        {
+          "from": "planner",
+          "to": "orchestrator",
+          "workflow_id": "wf_20251006_214152_0a9b2b",
+          "phase": "plan",
+          "summary": "Plan ready: 4 tasks, 1.3h, high complexity",
+          "data": {
+            "task_count": 4,
+            "total_estimate_hours": 1.3,
+            "complexity": "high",
+            "approach": "experimental",
+            "risks_identified": 2,
+            "risks": [
+              {
+                "id": "risk_001",
+                "description": "Low confidence in project understanding",
+                "category": "knowledge",
+                "likelihood": "high",
+                "impact": "high",
+                "mitigation": "Conduct deep research before implementation",
+                "owner": "planner",
+                "status": "open"
+              },
+              {
+                "id": "risk_002",
+                "description": "5 unknowns identified",
+                "category": "technical",
+                "likelihood": "medium",
+                "impact": "medium",
+                "mitigation": "Address unknowns through research and experimentation",
+                "owner": "planner",
+                "status": "open"
+              }
+            ],
+            "checkpoints": 2,
+            "checkpoint_details": [
+              {
+                "name": "Checkpoint 1",
+                "after_task": "Research relevant technologies",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              },
+              {
+                "name": "Checkpoint 2",
+                "after_task": "Set up development environment",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              }
+            ],
+            "resource_budget": {
+              "time_estimate": {
+                "optimistic": "0.9 hours",
+                "realistic": "1.3 hours",
+                "pessimistic": "2.0 hours"
+              },
+              "token_budget": {
+                "scout": 5000,
+                "planner": 8000,
+                "builder": 20000,
+                "total": 33000,
+                "buffer": 20000
+              }
+            },
+            "requires_user_approval": true,
+            "approval_rationale": "High complexity with 2 risks requires careful review"
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Present plan to user for approval",
+            "Address user concerns if any",
+            "Hand off to Builder upon approval"
+          ],
+          "confidence": 0.6000000000000001,
+          "warnings": [
+            "high complexity requires careful execution",
+            "2 risks identified"
+          ],
+          "timestamp": "2025-10-06T21:41:52.794513",
+          "metadata": {
+            "token_count": 402
+          }
+        }
+      ],
+      "research_triggered": true,
+      "approval_required": true
+    }
+  },
+  {
+    "scenario": "react_library",
+    "success": true,
+    "data": {
+      "workflow_id": "wf_20251006_214152_ac43d6",
+      "status": "awaiting_approval",
+      "handoffs": [
+        {
+          "from": "scout",
+          "to": "planner",
+          "workflow_id": "wf_20251006_214152_ac43d6",
+          "phase": "plan",
+          "summary": "react_library: web_app, React, TypeScript, Vite, Tailwind CSS, Vitest, confidence 0.90",
+          "data": {
+            "project_type": "web_app",
+            "tech_stack": [
+              "React",
+              "TypeScript",
+              "Vite",
+              "Tailwind CSS",
+              "Vitest"
+            ],
+            "architecture_pattern": "component_library",
+            "key_files": [
+              "package.json",
+              "README.md"
+            ],
+            "dependencies": {},
+            "structure": {
+              "src_files": 0,
+              "test_files": 0
+            },
+            "unknowns": [],
+            "recommendations": [],
+            "confidence": 0.9,
+            "exploration_time_seconds": 0.0,
+            "timeout_occurred": false
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Analyze Scout findings",
+            "Create implementation plan",
+            "Assess risks and complexity"
+          ],
+          "confidence": 0.9,
+          "warnings": [],
+          "timestamp": "2025-10-06T21:41:52.794595",
+          "metadata": {
+            "token_count": 111,
+            "execution_time_seconds": 0.0
+          }
+        },
+        {
+          "from": "planner",
+          "to": "orchestrator",
+          "workflow_id": "wf_20251006_214152_ac43d6",
+          "phase": "plan",
+          "summary": "Plan ready: 6 tasks, 3.3h, low complexity",
+          "data": {
+            "task_count": 6,
+            "total_estimate_hours": 3.3,
+            "complexity": "low",
+            "approach": "greenfield",
+            "risks_identified": 0,
+            "risks": [],
+            "checkpoints": 2,
+            "checkpoint_details": [
+              {
+                "name": "Checkpoint 1",
+                "after_task": "Implement Storybook",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              },
+              {
+                "name": "Checkpoint 2",
+                "after_task": "Document component API",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              }
+            ],
+            "resource_budget": {
+              "time_estimate": {
+                "optimistic": "2.3 hours",
+                "realistic": "3.3 hours",
+                "pessimistic": "5.0 hours"
+              },
+              "token_budget": {
+                "scout": 5000,
+                "planner": 8000,
+                "builder": 30000,
+                "total": 43000,
+                "buffer": 20000
+              }
+            },
+            "requires_user_approval": true,
+            "approval_rationale": "Standard approval for implementation plan"
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Present plan to user for approval",
+            "Address user concerns if any",
+            "Hand off to Builder upon approval"
+          ],
+          "confidence": 1.0,
+          "warnings": [],
+          "timestamp": "2025-10-06T21:41:52.794631",
+          "metadata": {
+            "token_count": 244
+          }
+        }
+      ],
+      "research_triggered": false,
+      "approval_required": true
+    }
+  },
+  {
+    "scenario": "simple_cli",
+    "success": true,
+    "data": {
+      "workflow_id": "wf_20251006_214152_fdf298",
+      "status": "awaiting_approval",
+      "handoffs": [
+        {
+          "from": "scout",
+          "to": "planner",
+          "workflow_id": "wf_20251006_214152_fdf298",
+          "phase": "plan",
+          "summary": "simple_cli: cli_tool, Node.js, Jest, confidence 0.85",
+          "data": {
+            "project_type": "cli_tool",
+            "tech_stack": [
+              "Node.js",
+              "Jest"
+            ],
+            "architecture_pattern": "unknown",
+            "key_files": [
+              "package.json",
+              "README.md"
+            ],
+            "dependencies": {},
+            "structure": {
+              "src_files": 0,
+              "test_files": 0
+            },
+            "unknowns": [],
+            "recommendations": [],
+            "confidence": 0.85,
+            "exploration_time_seconds": 0.0,
+            "timeout_occurred": false
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Analyze Scout findings",
+            "Create implementation plan",
+            "Assess risks and complexity"
+          ],
+          "confidence": 0.85,
+          "warnings": [],
+          "timestamp": "2025-10-06T21:41:52.794695",
+          "metadata": {
+            "token_count": 97,
+            "execution_time_seconds": 0.0
+          }
+        },
+        {
+          "from": "planner",
+          "to": "orchestrator",
+          "workflow_id": "wf_20251006_214152_fdf298",
+          "phase": "plan",
+          "summary": "Plan ready: 6 tasks, 1.8h, low complexity",
+          "data": {
+            "task_count": 6,
+            "total_estimate_hours": 1.8,
+            "complexity": "low",
+            "approach": "greenfield",
+            "risks_identified": 0,
+            "risks": [],
+            "checkpoints": 2,
+            "checkpoint_details": [
+              {
+                "name": "Checkpoint 1",
+                "after_task": "Add input validation",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              },
+              {
+                "name": "Checkpoint 2",
+                "after_task": "Update documentation",
+                "criteria": [
+                  "All tasks completed",
+                  "Tests passing",
+                  "No blockers"
+                ]
+              }
+            ],
+            "resource_budget": {
+              "time_estimate": {
+                "optimistic": "1.3 hours",
+                "realistic": "1.8 hours",
+                "pessimistic": "2.8 hours"
+              },
+              "token_budget": {
+                "scout": 5000,
+                "planner": 8000,
+                "builder": 30000,
+                "total": 43000,
+                "buffer": 20000
+              }
+            },
+            "requires_user_approval": true,
+            "approval_rationale": "Standard approval for implementation plan"
+          },
+          "artifacts": [],
+          "next_actions": [
+            "Present plan to user for approval",
+            "Address user concerns if any",
+            "Hand off to Builder upon approval"
+          ],
+          "confidence": 1.0,
+          "warnings": [],
+          "timestamp": "2025-10-06T21:41:52.794727",
+          "metadata": {
+            "token_count": 244
+          }
+        }
+      ],
+      "research_triggered": false,
+      "approval_required": true
+    }
+  }
+]

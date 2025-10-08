@@ -1,0 +1,143 @@
+[
+  {
+    "scenario": "empty_project",
+    "success": true,
+    "data": {
+      "project_type": "unknown",
+      "tech_stack": [],
+      "architecture_pattern": "unknown",
+      "key_files": [
+        "README.md"
+      ],
+      "dependencies": {},
+      "structure": {
+        "src_files": 0,
+        "test_files": 0
+      },
+      "unknowns": [
+        "No source files found",
+        "Project structure unclear"
+      ],
+      "recommendations": [],
+      "confidence": 0.3,
+      "exploration_time_seconds": 0.0,
+      "timeout_occurred": false
+    }
+  },
+  {
+    "scenario": "legacy_codebase",
+    "success": true,
+    "data": {
+      "project_type": "web_app",
+      "tech_stack": [
+        "AngularJS 1.x",
+        "Bower"
+      ],
+      "architecture_pattern": "unknown",
+      "key_files": [
+        "bower.json",
+        "README.md"
+      ],
+      "dependencies": {},
+      "structure": {
+        "src_files": 0,
+        "test_files": 0
+      },
+      "unknowns": [
+        "Build system (Grunt assumed)",
+        "No test framework detected"
+      ],
+      "recommendations": [
+        "Consider TypeScript for type safety"
+      ],
+      "confidence": 0.75,
+      "exploration_time_seconds": 0.0,
+      "timeout_occurred": false
+    }
+  },
+  {
+    "scenario": "max_plugin",
+    "success": true,
+    "data": {
+      "project_type": "unknown",
+      "tech_stack": [
+        "Max/MSP"
+      ],
+      "architecture_pattern": "unknown",
+      "key_files": [
+        "README.md"
+      ],
+      "dependencies": {},
+      "structure": {
+        "src_files": 0,
+        "test_files": 0
+      },
+      "unknowns": [
+        "Build process unclear",
+        "MIDI routing implementation",
+        "Deployment workflow",
+        "No source files found",
+        "Project structure unclear"
+      ],
+      "recommendations": [],
+      "confidence": 0.3,
+      "exploration_time_seconds": 0.0,
+      "timeout_occurred": false
+    }
+  },
+  {
+    "scenario": "react_library",
+    "success": true,
+    "data": {
+      "project_type": "web_app",
+      "tech_stack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS",
+        "Vitest"
+      ],
+      "architecture_pattern": "component_library",
+      "key_files": [
+        "package.json",
+        "README.md"
+      ],
+      "dependencies": {},
+      "structure": {
+        "src_files": 0,
+        "test_files": 0
+      },
+      "unknowns": [],
+      "recommendations": [],
+      "confidence": 0.9,
+      "exploration_time_seconds": 0.0,
+      "timeout_occurred": false
+    }
+  },
+  {
+    "scenario": "simple_cli",
+    "success": true,
+    "data": {
+      "project_type": "cli_tool",
+      "tech_stack": [
+        "Node.js",
+        "Jest"
+      ],
+      "architecture_pattern": "unknown",
+      "key_files": [
+        "package.json",
+        "README.md"
+      ],
+      "dependencies": {},
+      "structure": {
+        "src_files": 0,
+        "test_files": 0
+      },
+      "unknowns": [],
+      "recommendations": [],
+      "confidence": 0.85,
+      "exploration_time_seconds": 0.0,
+      "timeout_occurred": false
+    }
+  }
+]

@@ -1,0 +1,48 @@
+# Serena Project Configuration
+# For Claude Code Agent System test scenarios
+
+# Project settings
+name: cc_agents_test_scenarios
+description: Test scenarios for agent orchestration system
+
+# Paths to index
+paths:
+  - test_scenarios/simple_cli
+  - test_scenarios/react_library
+  - test_scenarios/max_plugin
+  - test_scenarios/legacy_codebase
+  - test_scenarios/empty_project
+  - scripts
+
+# Language servers to use
+languages:
+  - python
+  - typescript
+  - javascript
+  - go
+  - rust
+
+# Performance settings
+index:
+  enabled: true
+  cache_dir: .serena/cache
+
+# Context mode
+context: ide-assistant
+
+# Tool preferences
+tools:
+  # Semantic tools (high priority)
+  get_symbols_overview: true
+  find_symbol: true
+  find_referencing_symbols: true
+
+  # Editing tools
+  replace_symbol_body: true
+  insert_after_symbol: true
+  insert_before_symbol: true
+
+  # File operations
+  list_dir: true
+  find_file: true
+  search_for_pattern: true

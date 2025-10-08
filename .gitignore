@@ -1,0 +1,61 @@
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+memory.db
+
+# Logs
+*.log
+logs/
+
+# Debug files
+debug/
+*.debug
+
+# Shell snapshots
+shell-snapshots/
+
+# Credentials
+.credentials.json
+*.key
+*.pem
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Build outputs
+dist/
+build/
+*.out
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Archive (keeping for reference but not committing all)
+# Uncomment if you want to exclude archive completely
+# archive/

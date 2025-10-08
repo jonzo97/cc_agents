@@ -1,0 +1,24 @@
+This devlog focuses on the capabilities of Claude Code 2.0 and Claude 4.5 Sonnet for agentic coding, highlighting their superiority over other tools like Codex CLI and Gemini CLI (0:26-0:46). The video demonstrates how to leverage these tools to scale compute with AI agents and automate complex engineering tasks with minimal human intervention.
+
+Key takeaways from the video include:
+
+Problem Solved: The video showcases two main problems being solved:
+
+Migrating an existing codebase from the old Claude Code SDK to the new Claude Agent SDK (1:06-1:18).
+Building prototypes of real-time agents with OpenAI tooling on a dedicated agent environment (1:20-1:29).
+Agentic Workflow Demonstration: The core of the demonstration revolves around a "scout-plan-build" workflow (2:57-3:02).
+
+Scout: Agents search the codebase for relevant files using fast, token-efficient agents, delegating the search process to optimize the planner's context window (5:06-5:16, 7:00-7:06). This involves running multiple sub-agents in parallel using different models like Gemini, Codeex, and Open Code to get diverse perspectives (5:46-6:25).
+Plan: A dedicated planner agent analyzes the scouted files and scrapes documentation to design the migration or prototype build, documenting the plan for subsequent steps (7:22-7:45).
+Build: The agent executes the plan, performing the actual code migration or prototype creation (8:26-9:29).
+Chaining Custom Slash Commands: A significant feature highlighted is the ability to compose agentic prompts by running custom slash commands within other custom slash commands (4:30-4:40, 8:00-8:07). This allows for isolating and reusing agentic prompts more effectively.
+
+Dedicated Agent Devices and Out-of-Loop Systems: The video emphasizes the concept of dedicated agent devices that run autonomous workflows (1:01-1:04, 2:10-2:24). This enables engineers to hand off complex tasks to agents and receive live updates without being "in the loop" for every single step (1:30-1:43, 2:25-2:30, 10:40-10:55, 20:44-21:04).
+
+Context Engineering (R&D Framework): The importance of managing the agent's context window is discussed, specifically using the "Reduce and Delegate" (R&D) framework (5:21-5:30). This involves offloading work to sub-agents to keep the primary agent's context window focused on planning and execution (7:04-7:09).
+
+Limitations and Solutions: The video also touches on the limitations of single agents due to context window constraints (8:54-9:07, 13:40-13:50). The solution presented is to scale up to "out-of-loop agentic systems" and dedicated AI developer workflows (ADWs), which isolate agents' context windows and combine raw code with agentic approaches (13:21-13:40, 15:25-15:33).
+
+Output Style Customization: The creator discusses customizing the output style in Claude Code 2.0 to ensure all outputs are visible, as the default setting can hard-truncate information (16:13-16:40). An "Observable tools diffs TTS" output style is shared, providing diff reports, ordered tool calls, and audio task summaries (16:50-17:03).
+
+Tactical Agentic Coding: The video promotes a course called "Tactical Agentic Coding" (21:45-21:56) which delves deeper into building systems that build themselves, scaling beyond traditional AI coding and prompt engineering (23:23-23:27). The core idea is to build the system that builds the system (23:44-23:47, 25:23-25:26).
