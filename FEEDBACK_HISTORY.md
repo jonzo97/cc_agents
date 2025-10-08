@@ -211,9 +211,255 @@ This file tracks data-driven feedback from the agent coordination database to dr
 ---
 ```
 
+---
+
+## Analysis #2: 2025-10-08 (Real-World Failure - CRITICAL)
+
+**Date**: 2025-10-08 (Evening)
+**Test Project**: mcu-competitive-analysis
+**Context**: First real-world dogfooding attempt
+
+### Critical Integration Failure 🔴
+
+**Test Setup**:
+- Agent system installed in mcu-competitive-analysis project
+- Setup script ran successfully
+- All slash commands available
+- All 6 agents configured globally
+- Database ready
+
+**Result**: **AGENT SYSTEM NEVER USED** ❌
+
+Claude in the other session defaulted to manual implementation despite having:
+- Orchestrator agent
+- Research agent
+- Scout agent
+- Planner agent
+- Builder agent
+- All slash commands functional
+
+**Impact**: **System provided ZERO value despite being installed and working.**
+
+### Root Cause Analysis
+
+#### 1. **CLAUDE.md Integration Missing** 🔴 CRITICAL
+
+**Issue**: Setup script created `.serena/project.yml` and `AGENT_SYSTEM_USAGE.md` but **did not modify CLAUDE.md**.
+
+**Result**: Claude had no instructions to use agents.
+
+**Evidence**: CLAUDE.md in mcu-competitive-analysis had zero mention of:
+- Agent-first development
+- When to use which agent
+- Slash commands
+- Orchestrator for multi-step tasks
+- Research agent for competitive intelligence
+
+**Quote from other session**:
+> "I had to consciously remember agents exist"
+
+This proves agents must be **automatic default**, not optional.
+
+#### 2. **No Default Agent Pattern** ⚠️
+
+**Issue**: Without explicit instructions, Claude's default behavior is manual implementation.
+
+**Why This Failed**:
+- Plan mode triggered "I'll code this myself" instead of "I'll orchestrate agents"
+- No task → agent mapping
+- No strategic work detection keywords
+- No fallback protocol
+
+#### 3. **Silent Agent Failures** ⚠️
+
+**Issue**: Scout and Feedback agents were launched but never returned results.
+
+**Claude's Response**: Abandoned agents and continued with manual work.
+
+**Should Have**:
+- Checked `/workflow-status`
+- Queried `/feedback` for errors
+- Tried alternatives
+- Only then fallen back
+
+#### 4. **Strategic Context Not Loaded** ⚠️
+
+**Issue**: `mcu_competitive_intel_vision.md` was read once, then forgotten.
+
+**Impact**: Work focused on code extraction instead of strategic intelligence.
+
+**Should Have**:
+- Reloaded vision doc before planning
+- Identified strategic goals
+- Chosen agents that deliver strategic value
+
+#### 5. **Context Monitoring Failure** 🔴 CRITICAL
+
+**Issue**: Reached compaction limit **5 times in one day** without warning.
+
+**User Quote**:
+> "we fucked up again and got me past the point where i could compact without needing to go back a couple messages"
+
+**Impact**: Constant workflow interruption, extreme frustration.
+
+**Root Cause**: No proactive context monitoring at 75%/85%/90% thresholds.
+
+### Fixes Implemented
+
+#### ✅ 1. Updated mcu-competitive-analysis/CLAUDE.md
+
+Added comprehensive "Agent-First Development" section:
+- ⚠️ CRITICAL RULE at top: "Agents are the DEFAULT"
+- Default workflow (95% of tasks use agents)
+- Task → Agent mapping table
+- Strategic work detection keywords
+- Vision document integration
+- Agent failure protocol
+- Plan mode = plan agent workflows
+
+**Key addition**:
+```markdown
+**Keywords that ALWAYS trigger Research Agent + Orchestrator:**
+- "competitive", "market", "analysis", "intelligence", "landscape"
+- "compare", "evaluate", "positioning", "segment", "timeline"
+- "strategic", "recommendations", "roadmap", "opportunities"
+```
+
+#### ✅ 2. Created CLAUDE.md Template
+
+**New file**: `cc_agents/templates/CLAUDE.md.template`
+
+Reusable template for future projects with agent-first patterns baked in.
+
+### Critical Insights
+
+1. **Agents must be automatic** - Requiring conscious thought to use agents = system failure
+2. **CLAUDE.md is critical** - Without it, even installed agents provide zero value
+3. **Context monitoring is broken** - 5 failures in one day is unacceptable
+4. **Strategic work needs strategic agents** - Competitive intelligence = Research + Orchestrator, not code extraction
+
+### Blocking Issues for Beta
+
+🔴 **CRITICAL** (Blocking Beta):
+1. CLAUDE.md template integration (✅ FIXED)
+2. Proactive context monitoring (🔴 STILL BROKEN)
+3. Confidence score logging (🔴 STILL BROKEN - from Analysis #1)
+
+⚠️ **HIGH** (Should fix for Beta):
+4. Agent failure fallback protocol (documented, needs testing)
+5. Builder reliability (62.5% failure rate - from Analysis #1)
+
+### Validation Required
+
+**Next Real-World Test**:
+1. Use updated CLAUDE.md in mcu-competitive-analysis
+2. Verify agents are used automatically
+3. Test Research Agent on competitive intelligence tasks
+4. Verify Orchestrator triggers for strategic work
+5. Collect new feedback data
+
+**Success Metrics**:
+- [ ] Agents used by default (not manually triggered)
+- [ ] Research Agent used for competitive/market research
+- [ ] Orchestrator coordinates multi-step workflows
+- [ ] Context warnings at 75%/85%/90% (not at 95%)
+- [ ] No silent agent failures (fallback protocol used)
+
+### Recommendations
+
+#### Immediate (Before Next Session)
+
+1. **🔴 CRITICAL: Implement Context Monitoring**
+   ```
+   Priority: BLOCKING BETA
+   Effort: 2-3 hours (needs code)
+
+   Requirements:
+   - Check context % every 10-15 messages
+   - Alert at 75% (yellow warning)
+   - Alert at 85% (orange warning)
+   - Alert at 90% (red urgent)
+   - Suggest compaction candidates
+   - NEVER let user hit 95%+ without multiple warnings
+
+   Implementation Options:
+   - Agent-based monitoring (Context Manager agent proactive check)
+   - User-side monitoring (check after each tool use)
+   - Hybrid approach
+   ```
+
+2. **Test Updated CLAUDE.md**
+   ```
+   Priority: HIGH
+   Effort: 30 min
+
+   Test in mcu-competitive-analysis:
+   - Ask for competitive analysis
+   - Verify Research Agent is used
+   - Verify Orchestrator coordinates workflow
+   - Check /feedback after completion
+   ```
+
+3. **Fix Confidence Logging** (from Analysis #1)
+   ```
+   Priority: CRITICAL
+   Effort: 1-2 hours
+
+   Still blocking beta - see Analysis #1 recommendations
+   ```
+
+#### Medium-Term
+
+4. **Setup Script Enhancement**
+   ```
+   Priority: MEDIUM
+   Effort: 1 hour
+
+   Options:
+   - Copy CLAUDE.md.template if no CLAUDE.md exists
+   - Offer to prepend agent section to existing CLAUDE.md
+   - Warn user to integrate agent patterns manually
+   ```
+
+5. **Agent Failure Recovery**
+   ```
+   Priority: MEDIUM
+   Effort: 2-3 hours
+
+   Design:
+   - Timeout detection (3 min)
+   - Auto-check /workflow-status
+   - Auto-query /feedback for errors
+   - Suggest alternatives
+   - Document failure pattern
+   ```
+
+### Data Quality Notes
+
+- **Context**: Real-world dogfooding on strategic intelligence project
+- **Severity**: CRITICAL - system installed but unused
+- **User Impact**: "bashing my head against a wall at 2am"
+- **Validation**: Proves technical system works (Phase 2) but integration is broken
+
+### Key Takeaway
+
+**Technical validation (Phase 2) ≠ Real-world usability**
+
+Phase 2 proved agents work when explicitly invoked. Real-world test proved agents aren't invoked without explicit CLAUDE.md instructions.
+
+**Both are critical. System is not production-ready until both work.**
+
+---
+
 ## Change Log
 
-- **2025-10-08**: Initial analysis created during Phase 2 testing
+- **2025-10-08 (Evening)**: Real-world failure analysis added
+  - Critical: CLAUDE.md integration missing
+  - Critical: Context monitoring failed 5 times
+  - Fixed: Created CLAUDE.md template and updated mcu project
+  - Still broken: Context monitoring, confidence logging
+
+- **2025-10-08 (Afternoon)**: Initial analysis created during Phase 2 testing
   - Identified critical confidence score logging issue
   - Documented Builder failure pattern
   - Created feedback-driven improvement loop

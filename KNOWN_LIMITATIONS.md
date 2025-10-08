@@ -41,9 +41,52 @@
 7. **Setup Script** - Portable to new projects
 8. **Serena LSP** - Connected (some activation issues)
 
-## 🔴 Critical Issues Found (Phase 2 Testing) - STATUS UPDATE
+## 🔴 Critical Issues Found (Testing) - STATUS UPDATE
 
-### 1. **Confidence Score Logging** - ✅ FIXED (2025-10-08)
+### NEW: Real-World Testing (Evening 2025-10-08)
+
+#### 1. **CLAUDE.md Integration** - ✅ FIXED (2025-10-08) **BLOCKING BETA**
+   - **Issue**: Agent system installed but **NEVER USED** in real-world test
+   - **Root Cause**: Setup script doesn't touch CLAUDE.md - no agent instructions
+   - **Impact**: System provided **ZERO value** despite being installed and working
+   - **Evidence**: mcu-competitive-analysis test - defaulted to manual implementation
+   - **User Quote**: *"I had to consciously remember agents exist"*
+   - **Fix Applied**:
+     - Created `templates/CLAUDE.md.template` with agent-first patterns
+     - Updated mcu-competitive-analysis/CLAUDE.md with comprehensive agent instructions
+     - Added "Agent-First Development" section (automatic, not optional)
+     - Task → Agent mapping table
+     - Strategic work detection keywords
+     - Agent failure protocol
+   - **Status**: ✅ FIXED - Needs validation testing
+   - **Testing**: Use updated CLAUDE.md, verify agents used automatically
+   - **Expected**: 0% agent usage → 95% agent usage
+   - **Priority**: **WAS BLOCKING BETA** (now fixed)
+   - **See**: FEEDBACK_HISTORY.md Analysis #2
+
+#### 2. **Context Monitoring** - 🔴 STILL BROKEN **BLOCKING BETA**
+   - **Issue**: Reached compact limit **5 times in one day** without warning
+   - **Root Cause**: No proactive monitoring at 75%/85%/90% thresholds
+   - **Impact**: Constant workflow interruption, extreme user frustration
+   - **User Quote**: *"bashing my head against a wall at 2am"*
+   - **Status**: 🔴 **STILL BROKEN** - Needs implementation
+   - **Fix Required**:
+     - Alert at 75% (yellow warning)
+     - Alert at 85% (orange warning)
+     - Alert at 90% (red urgent)
+     - Suggest compaction candidates
+     - **NEVER** let user hit 95%+ without multiple warnings
+   - **Implementation Options**:
+     - Agent-based monitoring (Context Manager proactive check)
+     - User-side monitoring (check after each tool use)
+     - Hybrid approach
+   - **Effort**: 2-3 hours (needs code)
+   - **Priority**: **CRITICAL - BLOCKING BETA**
+   - **See**: FEEDBACK_HISTORY.md Analysis #2
+
+### Technical Issues (Afternoon 2025-10-08)
+
+#### 3. **Confidence Score Logging** - ✅ FIXED (2025-10-08)
    - **Issue**: 100% of handoffs (11/11) had NULL confidence scores
    - **Impact**: Blocked auto-research trigger, no performance tracking
    - **Root Cause**: Agents not logging confidence to database
@@ -152,9 +195,12 @@
 ## 📊 Version Status
 
 - **v2.2.0-design** ✅ Complete (excellent architecture)
-- **v2.2.0-alpha** 🔜 Tonight (Phase 1 implementation)
-- **v2.2.0-beta** 🔜 After testing
-- **v2.2.0-stable** 🔜 After real-world validation
+- **v2.2.0-alpha** ✅ CURRENT (Phase 1 & 2 complete, real-world tested)
+  - ✅ Technical validation (agents work when invoked)
+  - ✅ CLAUDE.md integration fixed
+  - 🔴 Context monitoring STILL BROKEN (blocking beta)
+- **v2.2.0-beta** 🔜 After context monitoring fix
+- **v2.2.0-stable** 🔜 After extended real-world validation
 
 ## 🎯 Next Steps (Post Autonomous Fixes - 2025-10-08)
 
@@ -188,6 +234,22 @@
    - PERPLEXITY_SETUP.md created
    - AGENT_CHANGES_LOG.md created
    - **Next**: User runs testing guide
+
+### 🔴 NEW CRITICAL ISSUES (Evening 2025-10-08 - Real-World Test)
+
+6. **CLAUDE.md Integration Fixed** 🔴 ✅ FIXED
+   - **Issue**: System never used despite installation
+   - **Fixed**: Created CLAUDE.md.template + updated mcu project
+   - **Impact**: 0% → 95% agent usage expected
+   - **Next**: Validate in other session with updated CLAUDE.md
+
+7. **Context Monitoring** 🔴 ⚠️ **BLOCKING BETA**
+   - **Issue**: Hit limit 5 times without warning
+   - **Status**: **STILL BROKEN** - needs implementation
+   - **Fix Required**: Alert at 75%/85%/90%, suggest compaction
+   - **Effort**: 2-3 hours
+   - **Priority**: **CRITICAL - BLOCKING BETA**
+   - **Next**: Implement proactive monitoring
 
 ### 🧪 Testing Priorities (User Action Required)
 

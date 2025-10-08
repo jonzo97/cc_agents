@@ -76,7 +76,32 @@ else
     echo "   ✅ Serena config already exists"
 fi
 
-# 5. Create project README with usage instructions
+# 5. Handle CLAUDE.md integration (CRITICAL for agent usage)
+echo ""
+echo "📋 Checking CLAUDE.md integration..."
+
+if [ ! -f "CLAUDE.md" ]; then
+    echo "   No CLAUDE.md found - creating from template..."
+    cp "$AGENT_SYSTEM_DIR/templates/CLAUDE.md.template" "CLAUDE.md"
+    echo "   ✅ Created CLAUDE.md with agent-first patterns"
+    echo "   ⚠️  IMPORTANT: Add project-specific details to CLAUDE.md"
+else
+    echo "   ℹ️  CLAUDE.md already exists"
+    echo ""
+    echo "   ⚠️  CRITICAL: Your CLAUDE.md needs agent-first instructions!"
+    echo ""
+    echo "   Without them, Claude will NOT use agents automatically."
+    echo "   Real-world test showed 0% agent usage without CLAUDE.md integration."
+    echo ""
+    echo "   Options:"
+    echo "   1. Manual: Prepend agent section from templates/CLAUDE.md.template"
+    echo "   2. Backup & Replace: mv CLAUDE.md CLAUDE.md.backup && cp templates/CLAUDE.md.template CLAUDE.md"
+    echo ""
+    echo "   Template location: $AGENT_SYSTEM_DIR/templates/CLAUDE.md.template"
+    echo ""
+fi
+
+# 6. Create project README with usage instructions
 echo ""
 echo "📝 Creating agent system README..."
 
@@ -171,7 +196,7 @@ else
     echo "   ℹ️  AGENT_SYSTEM_USAGE.md already exists (not overwriting)"
 fi
 
-# 6. Verify agent configurations exist
+# 7. Verify agent configurations exist
 echo ""
 echo "🧠 Verifying agent configurations..."
 AGENTS=("scout" "research" "planner" "builder" "context_manager" "orchestrator")
@@ -193,7 +218,7 @@ if [ ${#MISSING_AGENTS[@]} -gt 0 ]; then
     echo "   To: $HOME/.claude/agents/"
 fi
 
-# 7. Verify MCP servers
+# 8. Verify MCP servers
 echo ""
 echo "🔌 Checking MCP servers..."
 echo "   Run: claude mcp list"
@@ -202,7 +227,7 @@ echo "   Expected:"
 echo "   ✅ serena - Semantic code understanding"
 echo "   ✅ perplexity (optional) - Enhanced research"
 
-# 8. Summary
+# 9. Summary
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ Setup Complete!"
