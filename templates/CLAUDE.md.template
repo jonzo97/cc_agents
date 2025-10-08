@@ -56,15 +56,46 @@ When in "plan mode":
 
 **NOT**: "Plan what code I'll manually write"
 
-### Slash Commands Available
+### How to Actually Invoke Agents
 
-```bash
-/research <topic>          # Deep technical/market research
-/scout-explore [dir]       # Explore codebase architecture
-/workflow-status           # Check active workflows
-/feedback                  # Performance analysis & improvement suggestions
-/compact-status            # Context window usage
+**⚠️ CRITICAL**: Slash commands are documentation/prompt templates, NOT agent launchers!
+
+**Method 1: Natural Language (Recommended - Simplest)**
 ```
+"Use the research agent to investigate [topic]"
+"Use the orchestrator agent to plan this feature"
+"Launch scout agent to explore this codebase"
+"Use the planner agent to create implementation roadmap"
+```
+
+**Method 2: Task Tool (Explicit Control)**
+
+I will use the Task tool like this:
+```python
+Task(
+    subagent_type="research",
+    description="Research topic",
+    prompt="Detailed research instructions..."
+)
+```
+
+**Available Agent Types**:
+- `subagent_type="research"` - Deep technical/market research
+- `subagent_type="scout"` - Codebase exploration
+- `subagent_type="orchestrator"` - Workflow coordination
+- `subagent_type="planner"` - Strategic planning
+- `subagent_type="builder"` - Implementation
+
+**Method 3: Slash Commands (Guidance Only)**
+```bash
+/research <topic>    # ⚠️ Just a prompt template, doesn't launch agent
+/scout-explore       # ⚠️ Just instructions, use natural language instead
+/workflow-status     # Database query (works)
+/feedback            # Database analysis (works)
+```
+
+**Slash commands expand to instructions for Claude to follow manually**.
+To actually invoke agents, use Method 1 (natural language) or Method 2 (Task tool).
 
 ### Why This Matters
 
