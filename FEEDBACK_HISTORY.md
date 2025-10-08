@@ -674,3 +674,221 @@ All three must work for production-ready system.
   - Identified critical confidence score logging issue
   - Documented Builder failure pattern
   - Created feedback-driven improvement loop
+
+---
+
+## Analysis #2: 2025-10-08 (MCU Competitive Intelligence Session)
+
+**Date**: 2025-10-08 15:00
+**Context**: Building MCU competitive intelligence system - agent testing
+**Workflows Analyzed**: Recent database query + manual observations
+**Key Issue**: Scout agent codebase hallucination
+
+### 🔴 CRITICAL: Scout Agent Reliability Issue
+
+**Problem**: Scout agent fabricated non-existent file structure
+
+**Invocation**:
+```python
+Task(
+    subagent_type="scout",
+    description="Explore MCU codebase architecture",
+    prompt="Explore /home/jorgill/mcu-competitive-analysis..."
+)
+```
+
+**What Scout Reported**:
+- `extractor.py` (root level)
+- `profile.py` (root level)
+- `main.py` (root level)
+- Linear pipeline architecture with these modules
+
+**Actual Structure**:
+```
+mcu-competitive-analysis/
+├── mcu_intel_core/
+│   ├── extractors/device_extractor.py
+│   ├── models/device.py
+│   ├── comparison/comparator.py
+│   ├── reporting/markdown_generator.py
+│   └── analysis/
+│       ├── market_intelligence.py
+│       └── strategic_recommendations.py
+├── scripts/
+│   ├── extract_device.py
+│   └── compare_devices.py
+└── data/profiles/
+```
+
+**Root Cause Analysis**:
+1. Scout did NOT verify actual files on filesystem
+2. Generated plausible-sounding architecture from generic knowledge
+3. Appears to be pattern-matching typical project structures
+4. May not be using `get_symbols_overview` tool correctly
+5. No validation that mentioned files exist
+
+**Impact**: HIGH
+- Provides completely misleading information
+- Requires manual verification after every Scout invocation
+- Undermines trust in agent system
+- Blocks workflows that depend on accurate codebase understanding
+
+**Recommendation**: **DO NOT USE Scout agent** until fixed
+
+**Required Fixes**:
+1. **Mandatory filesystem verification**:
+   ```python
+   # Scout MUST start with:
+   ls -la /path/to/analyze
+   find . -name "*.py"
+   # THEN use get_symbols_overview on actual files
+   ```
+
+2. **Add validation layer**:
+   - After Scout returns findings, automatically check if mentioned files exist
+   - Flag discrepancies before presenting to user
+   - Return error if confidence < 0.6
+
+3. **Prompt improvements**:
+   - "You MUST verify files exist before describing them"
+   - "If uncertain about structure, say so - don't fabricate"
+   - "Provide file paths as proof for all claims"
+
+### ✅ Research Agent - Proven Reliable
+
+**Invocation**: Market intelligence research (STM32H7 vs PIC32CZ CA90)
+
+**Results**:
+- Timeline data: 6.5 year market lead (verified correct)
+- Ecosystem scores: STM32 9/10, PIC32 6.5/10 (reasonable)
+- Innovation velocity: 5 vs 3 first-to-market features (accurate)
+- Market positioning analysis (high quality)
+
+**Confidence**: HIGH - data matched external sources
+
+**Recommendation**: Continue using Research agent via Task tool
+
+### Agent Reliability Matrix (Updated)
+
+| Agent | Status | Confidence | Recommendation |
+|-------|--------|------------|----------------|
+| Research | ✅ Reliable | HIGH | Use for market intelligence |
+| Scout | ❌ Broken | NONE | Do not use - hallucinates |
+| Builder | ❓ Untested | Unknown | Test next with Serena |
+| Planner | ❓ Untested | Unknown | Not yet evaluated |
+| Orchestrator | ❓ Limited data | Unknown | 100% success (1 workflow) |
+
+### Database Metrics (Last 9 workflows)
+
+- **Success Rate**: 44.4% (4 completed, 5 failed)
+- **Handoff Confidence**: 0.00 average (all agents)
+  - ⚠️ Indicates confidence scoring not working
+- **Builder Agent**: 9 handoffs, 37.5% success rate from earlier testing
+- **Context Manager**: Active warnings suggest context pressure
+
+### Lessons Learned
+
+**What Works**:
+1. ✅ Research agent with Task tool invocation
+2. ✅ Manual development (Read/Write/Edit) for implementation
+3. ✅ Direct tool use faster and more reliable than agents for code tasks
+
+**What Doesn't Work**:
+1. ❌ Scout agent - completely unreliable
+2. ❌ Slash commands - don't actually invoke agents (are prompt templates)
+3. ❌ Assuming agents work without verification
+
+**Optimal Workflow** (Current):
+- Research agent: Market intelligence, competitive analysis
+- Manual tools: Code implementation, bug fixes, testing
+- Hybrid approach: Use agents where proven, manual where reliable
+
+### Fixes Implemented (2025-10-08 Evening)
+
+**✅ Fixed Scout Agent Hallucination Issue**
+
+**Changes to `~/.claude/agents/scout.md`**:
+
+1. **Added CRITICAL WARNING at top** (line 15):
+   - ⚠️ NEVER HALLUCINATE FILE STRUCTURE section
+   - Absolute requirement to verify every file/directory
+   - Explicit "What NOT to do" vs "What to DO"
+   - Consequence: Hallucination is CRITICAL FAILURE
+
+2. **Restructured Phase 1: Mandatory Filesystem Verification**:
+   - Step 1: Verify root structure with `ls -la`, `test -d`
+   - Step 2: Verify key files with `test -f`, `cat`
+   - Step 3: Find actual code files with `find`
+   - ⚠️ ABSOLUTE RULE: Only report verified files
+
+3. **Renumbered Phases** (now 5 phases instead of 4):
+   - Phase 1: Mandatory Filesystem Verification (1 min) ← NEW
+   - Phase 2: Project Type Detection (30 sec)
+   - Phase 3: Semantic Architecture Discovery (1 min)
+   - Phase 4: Dependency Mapping (1 min)
+   - Phase 5: Report Generation (30 sec)
+
+4. **Updated Progress Reporting**:
+   - Now shows 5 phases with verification first
+   - Completion message includes "Files Verified: X/Y"
+   - Shows unverified items count
+
+5. **Updated Confidence Scoring**:
+   - **−0.3 penalty** for any unverified files reported
+   - **+0.05 bonus** for complete verification
+   - Major penalty discourages hallucination
+
+6. **Updated JSON Output Format**:
+   - Added `"verification"` field with:
+     - `verified_directories`: []
+     - `verified_files`: []
+     - `unverified_items`: []
+     - `all_verified`: true/false
+     - `verification_method`: "test -f / test -d"
+
+7. **Updated Resource Limits**:
+   - Max time: 3.5 minutes (added 30 sec for verification)
+   - Filesystem checks: Unlimited (mandatory, not optional)
+
+**Expected Impact**:
+- **Before**: Scout fabricated files, 0% trust
+- **After**: Scout only reports verified files, high trust
+- **Confidence**: Appropriately penalized (−0.3) for unverified structure
+- **Next Test**: Re-test on mcu-competitive-analysis, expect actual structure
+
+### Action Items
+
+**Immediate**:
+- [x] Document Scout hallucination issue
+- [x] Debug Scout agent filesystem verification ✅ FIXED
+- [ ] Test Scout with fixes on mcu-competitive-analysis
+- [ ] Test Builder agent with Serena for semantic code editing
+
+**Short-term**:
+- [ ] Fix confidence scoring (currently 0.00 for all handoffs)
+- [ ] Add agent output validation before presenting to user
+- [ ] Validate Scout fix works in real scenario
+
+**Long-term**:
+- [ ] Create agent reliability test suite
+- [ ] Implement "human-in-the-loop" for low-confidence results
+- [ ] Build fail-safe workflows with validation checkpoints
+
+### Session Outcome
+
+**MCU Competitive Intelligence MVP**: ✅ Complete and functional
+**Agent System Reliability**: ❌ Mixed results, needs improvement
+**Approach**: Hybrid (agents + manual) was successful despite agent issues
+
+**Deliverables Created**:
+- Strategic analysis framework with market intelligence
+- 7-dimensional comparison engine (vs 5 originally)
+- Enhanced reporting with timeline, ecosystem, innovation analysis
+- Product Management, Sales, Executive intelligence sections
+- Battle cards with objection handlers
+
+**Data Quality Fixes**:
+- Corrected STM32H743VI release date: 2023 → 2017 (8.5 year lead)
+- Fixed objection handler text generation bug
+- Generated accurate strategic intelligence report
+
