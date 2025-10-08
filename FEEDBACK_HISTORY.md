@@ -968,3 +968,271 @@ Builder agent had **no output token limits** and verbose reporting:
 - [x] Add output token limit configuration ✅ FIXED (8k limit)
 - [ ] Test Builder with fixes on focused task
 
+# Agent Orchestration Feedback Report
+**Generated:** 2025-10-08 03:26:37
+
+---
+
+## 📊 Workflow Performance
+
+**Total workflows tracked:** 9
+
+| Status | Count | Percentage |
+|--------|-------|------------|
+| completed | 4 | 44.4% |
+| failed | 5 | 55.6% |
+| in_progress | 0 | 0.0% |
+
+**Success Rate:** 44.4%
+
+⚠️ **LOW SUCCESS RATE** - Agent workflows are failing > 40% of the time.
+
+## 🔄 Agent Handoff Patterns
+
+| From Agent | To Agent | Count |
+|------------|----------|-------|
+| builder | orchestrator | 9 |
+| planner | orchestrator | 1 |
+| scout | planner | 1 |
+
+## 🤖 Agent Activity
+
+### context_manager
+
+- `context_check`: 4
+- `warn`: 2
+- `none`: 2
+- `emergency_compact`: 2
+- `compact`: 1
+
+## ❌ Recent Failures
+
+**Workflow:** `wf_test_20251006_215221_27017e`
+- **Agent:** builder
+- **Request:** Test scenario: Simple Feature Implementation
+- **Time:** 2025-10-07 04:52:21
+
+**Workflow:** `wf_test_20251006_215221_ae8dfc`
+- **Agent:** builder
+- **Request:** Test scenario: Medium Complexity Feature
+- **Time:** 2025-10-07 04:52:21
+
+**Workflow:** `wf_test_20251006_215221_33145a`
+- **Agent:** builder
+- **Request:** Test scenario: Failure and Rollback Test
+- **Time:** 2025-10-07 04:52:21
+
+**Workflow:** `wf_test_20251006_215221_2bb017`
+- **Agent:** builder
+- **Request:** Test scenario: Large Project Build
+- **Time:** 2025-10-07 04:52:21
+
+**Workflow:** `wf_test_20251006_215132_e6a29e`
+- **Agent:** builder
+- **Request:** Test scenario: Failure and Rollback Test
+- **Time:** 2025-10-07 04:51:32
+
+## ⚠️  Issues Identified
+
+### Issue #1: Research Agent Not Used for Research Tasks
+
+**Pattern:** Skipping agent invocation for market/competitive research tasks
+
+**Example:**
+- Task: Find and download 4 competitive MCU datasheets
+- Approved workflow: Use Research agent (Phase B plan)
+- Actual behavior: Used WebSearch tool directly
+
+**Impact:**
+- Task completed successfully
+- But workflow deviated from approved plan
+- Research agent provides structured market context alongside URLs
+- Missing opportunity to leverage agent capabilities
+
+**Root Cause:**
+- WebSearch perceived as faster for simple URL lookup
+- Lack of clear trigger for when to use Research vs direct tools
+- Previous session feedback emphasized reducing agent failures
+
+**Recommendation:**
+- **Default to Research agent** for ALL market/competitive research tasks
+- Research agent should be used when:
+  - Gathering competitive intelligence
+  - Finding vendor documentation
+  - Understanding market positioning
+  - Acquiring technical specifications from web
+- Only use WebSearch directly for:
+  - Quick fact lookup (dates, versions)
+  - Documentation URL when context is not needed
+
+## 💡 Recommended Actions
+
+### 1. Agent Selection Policy
+
+Establish clear decision tree:
+```
+Research Task?
+├─ Market/Competitive → Research agent
+├─ Code exploration → Scout agent
+├─ Strategic planning → Planner agent
+├─ Implementation → Builder agent
+└─ Quick fact → Direct tools (WebSearch, Read, etc.)
+```
+
+### 2. Improve Success Rate
+
+Current 44.4% success rate is below target (>80%).
+
+**Actions:**
+- Analyze failure patterns in Builder agent (known token limit issues)
+- Add pre-flight checks before agent invocation
+- Implement fallback strategies (manual → agent → manual)
+
+### 3. Workflow Adherence
+
+When user approves multi-phase plan:
+- Follow agent usage specified in plan
+- Document deviations with /feedback immediately
+- Prefer approved workflow over perceived efficiency
+
+---
+
+## Analysis #4: 2025-10-08 (Workflow Adherence Failure - Research Agent Bypassed)
+
+**Date**: 2025-10-08 (Late Evening)
+**Test Project**: mcu-competitive-analysis
+**Context**: Datasheet acquisition task with approved multi-phase plan
+
+### Issue: Research Agent Bypassed Despite Approved Plan
+
+**Pattern**: Choosing "faster" direct tools over approved agents in workflows
+
+**Example Case:**
+- **Task**: Find and download 4 competitive MCU datasheets (NXP i.MX RT1170/1060, Renesas RX72M, Microchip SAM V71)
+- **Approved Workflow**: Phase B - Use Research agent (specified in plan)
+- **Actual Behavior**: Used WebSearch tool directly
+- **Result**: Task completed successfully BUT deviated from approved plan
+
+**Impact:**
+- ✅ Task completed, datasheets acquired
+- ❌ Missed structured market context from Research agent
+- ❌ No database logging of workflow
+- ❌ Undermined planning phase value
+- ❌ Pattern of bypassing agents when "efficiency" perceived
+
+### Root Cause Analysis
+
+1. **Perceived Efficiency**: WebSearch seen as faster for simple URL lookup
+2. **Lack of Clear Triggers**: No clear decision tree for Research vs WebSearch
+3. **Previous Feedback Confusion**: Earlier fixes emphasized reducing agent failures, may have led to avoiding agents
+4. **Value Mismatch**: Research agent value (structured context) not understood vs WebSearch (URLs only)
+
+### Research Agent vs WebSearch Comparison
+
+| Aspect | Research Agent | WebSearch Direct |
+|--------|---------------|------------------|
+| Output | Structured report + market context | URLs only |
+| Citations | ✅ Full source tracking | ❌ None |
+| Context | ✅ Market positioning, timelines | ❌ Raw data |
+| Confidence | ✅ Quality score (0.0-1.0) | ❌ None |
+| Database | ✅ Logged for reference | ❌ None |
+| Synthesis | ✅ Multi-source aggregation | ❌ Single query |
+
+**Reality**: Research agent ≠ WebSearch. One provides intelligence, one provides links.
+
+### Fixes Implemented (2025-10-08 Late Evening)
+
+**✅ Fixed Workflow Adherence Issue**
+
+**1. Updated CLAUDE.md (Both Projects)**:
+   - Added "Agent Selection Policy (CRITICAL)" section
+   - Clear decision tree: Research tasks → Research agent
+   - Workflow adherence rules: Follow approved plan exactly
+   - Example scenarios (correct vs wrong execution)
+   - Files: `/home/jorgill/mcu-competitive-analysis/CLAUDE.md`
+   - Files: `/home/jorgill/cc_agents/templates/CLAUDE.md.template`
+
+**2. Updated orchestrator.md**:
+   - Added "Plan Execution Protocol (CRITICAL)" section
+   - ⚠️ ABSOLUTE RULE: Once user approves plan, follow it EXACTLY
+   - Agent vs Direct Tool decision rules
+   - Deviation protocol (ask user first)
+   - Example: Correct vs wrong execution for Research agent
+   - Files: `~/.claude/agents/orchestrator.md`
+
+**3. Updated research.md**:
+   - Added "When to Use Research Agent (vs Direct Tools)" section
+   - ALWAYS use Research agent for: competitive intelligence, vendor docs, market research
+   - Comparison table showing Research agent advantages
+   - Example: Datasheet task (wrong WebSearch vs correct Research agent approach)
+   - Files: `~/.claude/agents/research.md`
+
+### Key Principles Established
+
+1. **Approved Plans Are Strategic Decisions, Not Suggestions**
+   - If plan says "Use Research agent" → Use Research agent
+   - Do NOT substitute direct tools for perceived efficiency
+   - Deviations require explicit user approval
+
+2. **Research Agent ≠ WebSearch**
+   - Research agent: Strategic intelligence with context
+   - WebSearch: URLs only, no context
+   - Always prefer structured output for strategic work
+
+3. **Workflow Adherence = System Value**
+   - Following workflows ensures consistent agent utilization
+   - Bypassing agents undermines planning phase effort
+   - Database logging provides future reference
+
+### Expected Impact
+
+**Before:**
+- Agents bypassed when direct tools seem faster
+- Approved workflows ignored
+- Missing structured context and market intelligence
+- Planning phase value undermined
+
+**After:**
+- Approved workflows followed exactly
+- Research agent used for all research tasks in plans
+- Structured market context captured
+- Consistent agent utilization and value delivery
+
+### Validation Required
+
+**Next Test:**
+1. Create multi-phase plan with Research agent specified
+2. Verify Research agent is used (not WebSearch substitution)
+3. Confirm structured output with market context delivered
+4. Check database logging of workflow
+5. Run `/feedback` to verify adherence
+
+**Success Metrics:**
+- [ ] 100% plan adherence when Research agent specified
+- [ ] Structured market context in all Research agent outputs
+- [ ] Database workflow logging for all agent invocations
+- [ ] No WebSearch substitutions in approved workflows
+
+### Recommendations
+
+**Immediate:**
+- Test workflow adherence with next research task
+- Verify Claude follows updated CLAUDE.md policy
+- Check orchestrator respects plan execution protocol
+
+**Short-term:**
+- Add plan adherence scoring to `/feedback` analysis
+- Track deviations and reasons in database
+- Create "deviation approval" prompt flow
+
+**Long-term:**
+- Build pre-flight checks before agent substitution
+- Implement "plan delta" detection (approved vs actual)
+- Add workflow adherence metrics to agent performance reviews
+
+### Key Takeaway
+
+**Workflow adherence is not optional - it's the foundation of agent system value.**
+
+Plans are strategic decisions made with user input. Deviating for "efficiency" destroys the planning phase's purpose and undermines trust in the agent system. Research agent provides strategic intelligence, not just URLs - this fundamental difference must be respected.
+

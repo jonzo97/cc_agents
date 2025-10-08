@@ -37,6 +37,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Check workflow progress | Status command | `/workflow-status` |
 | Analyze agent performance | Feedback command | `/feedback` |
 
+## Agent Selection Policy (CRITICAL - Workflow Adherence)
+
+**⚠️ ABSOLUTE RULE: When user approves a multi-phase plan, FOLLOW IT EXACTLY.**
+
+### Decision Tree for Agent vs Direct Tools
+
+**Research Tasks (Market/Competitive/Technical Intelligence):**
+- ✅ **Research Agent** → Competitive intelligence, vendor docs, market positioning, technical specs from web
+- ❌ **NOT WebSearch** → Research agent provides structured context, not just URLs
+
+**Code Tasks:**
+- ✅ **Scout Agent** → Codebase exploration and architecture discovery
+- ✅ **Planner Agent** → Strategic planning and task breakdown
+- ✅ **Builder Agent** → Code implementation
+
+**Direct Tools (Only When NOT in Approved Workflow):**
+- WebSearch → Quick fact lookup (dates, versions) when context not needed
+- Read/Edit/Write → Manual implementation when agents explicitly failed
+
+### Workflow Adherence Rules
+
+1. **If plan specifies an agent, use that agent** (even if direct tools seem faster)
+2. **Do NOT substitute direct tools for agents** in approved workflows
+3. **Research agent provides structured context**, not just URLs
+4. **Document deviations** with `/feedback` immediately if unavoidable
+5. **Prefer approved workflow** over perceived efficiency
+
+**Example Scenarios:**
+
+✅ **CORRECT:**
+- Plan says "Phase B: Use Research agent" → Use Research agent (even if WebSearch seems faster)
+- Research agent returns structured context + data
+- Workflow logged to database for future reference
+
+❌ **WRONG:**
+- Plan says "Phase B: Use Research agent" → Use WebSearch instead
+- Rationale "WebSearch is faster" violates approved plan
+- Missing structured context value
+
+**Why This Matters:**
+- Approved plans are strategic decisions, not suggestions
+- Research agent adds context, not just data retrieval
+- Workflow adherence ensures consistent agent utilization
+- Deviations undermine planning phase value
+
 ### Agent Failure Protocol
 
 If agent doesn't return results in 3 minutes:
