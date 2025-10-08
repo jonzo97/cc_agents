@@ -6,18 +6,27 @@ A sophisticated multi-agent system for autonomous software development with Clau
 
 This system orchestrates 6 specialized agents that work together to explore codebases, research technologies, plan implementations, build features, and manage context efficiently.
 
-**Current Version**: 2.2.0
-**Status**: Production Ready
+**Current Version**: 2.2.0-alpha
+**Status**: Alpha - Testing Required
 **Agents**: 6 (Scout, Research, Planner, Builder, Context Manager, Orchestrator)
+
+⚠️ **Reality Check**: This is a well-designed system with excellent documentation, but many features are untested. See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for details.
 
 ## Features
 
-- **🔍 Semantic Code Understanding** - Serena LSP integration for precise, language-aware code operations
-- **🔬 Autonomous Research** - Deep technical research with Perplexity Pro and WebSearch
-- **🧠 Intelligent Orchestration** - Auto-detects user intent and selects optimal workflows
-- **💾 Smart Context Management** - Preview-first compaction prevents context loss
-- **🤝 Agent Coordination** - Seamless handoffs between specialized agents
-- **📊 Performance Optimized** - 15-20% token reduction, 3-7x speed improvement
+### ✅ Tested & Working
+- **🔍 Semantic Code Understanding** - Serena LSP integration (proven in Phase 2.5)
+- **📁 Slash Commands** - 5 working commands for agent invocation and analysis
+- **🗄️ Database Coordination** - SQLite schema for workflow tracking
+- **📚 Comprehensive Documentation** - Guides, examples, setup scripts
+
+### 🧪 Designed & Untested
+- **🔬 Autonomous Research** - Research Agent with Perplexity integration (needs testing)
+- **🧠 Intelligent Orchestration** - Intent detection (relies on prompt interpretation)
+- **💾 Smart Context Management** - Preview-first compaction (design only, not implemented)
+- **🤝 Agent Coordination** - Handoff protocol (documented, needs verification)
+
+See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for full reality check.
 
 ## The 6 Agents
 
