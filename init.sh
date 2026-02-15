@@ -2,12 +2,15 @@
 # Initialize a project with cc_agents experimental agents
 #
 # Usage:
-#   ./init.sh <project-path>           # Copy agents into project's .claude/
-#   ./init.sh <project-path> --dry-run # Preview what would be copied
-#   ./init.sh <project-path> --remove  # Remove cc_agents from project (revert to vanilla)
+#   ./init.sh <project-path>                  # Copy base agents
+#   ./init.sh <project-path> --serena         # Copy Serena-enhanced variants
+#   ./init.sh <project-path> --dry-run        # Preview what would be copied
+#   ./init.sh <project-path> --serena --dry-run
+#   ./init.sh <project-path> --remove         # Remove cc_agents from project
 #
 # Examples:
 #   ./init.sh ~/some-new-project
+#   ./init.sh ~/some-new-project --serena
 #   ./init.sh /mnt/c/tcl_monster --dry-run
 #   ./init.sh ~/fpga_mcp --remove
 
@@ -15,34 +18,43 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENTS_SRC="$SCRIPT_DIR/agents"
+SERENA_SRC="$SCRIPT_DIR/agents/serena"
 
 # --- Argument parsing ---
 
 if [ -z "$1" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-    echo "Usage: ./init.sh <project-path> [--dry-run|--remove]"
+    echo "Usage: ./init.sh <project-path> [options]"
     echo ""
     echo "Copies experimental agents from cc_agents into a project's .claude/agents/"
     echo "directory. Project-level agents override the vanilla globals in ~/.claude/agents/."
     echo ""
     echo "Options:"
+    echo "  --serena    Use Serena-enhanced variants for scout, builder, reviewer"
     echo "  --dry-run   Preview what would be copied without making changes"
     echo "  --remove    Remove cc_agents agents from project (revert to vanilla globals)"
     echo ""
     echo "Examples:"
     echo "  ./init.sh ~/some-new-project"
+    echo "  ./init.sh ~/some-new-project --serena"
     echo "  ./init.sh /mnt/c/tcl_monster --dry-run"
     echo "  ./init.sh ~/fpga_mcp --remove"
     exit 0
 fi
 
 PROJECT_PATH="$1"
-MODE="init"
+shift
 
-if [ "$2" = "--dry-run" ]; then
-    MODE="dry-run"
-elif [ "$2" = "--remove" ]; then
-    MODE="remove"
-fi
+MODE="init"
+SERENA=false
+
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run) MODE="dry-run" ;;
+        --remove)  MODE="remove" ;;
+        --serena)  SERENA=true ;;
+        *)         echo "Unknown option: $arg"; exit 1 ;;
+    esac
+done
 
 # --- Validation ---
 
@@ -57,6 +69,7 @@ AGENTS_DST="$PROJECT_PATH/.claude/agents"
 echo "=== cc_agents init ==="
 echo "Project:  $PROJECT_NAME ($PROJECT_PATH)"
 echo "Source:   $AGENTS_SRC"
+[ "$SERENA" = true ] && echo "Serena:   $SERENA_SRC (overrides for scout, builder, reviewer)"
 echo "Target:   $AGENTS_DST"
 echo "Mode:     $MODE"
 echo ""
@@ -113,12 +126,22 @@ if [ "$MODE" = "dry-run" ]; then
     echo "[DRY RUN] Would copy these agents:"
     for agent_file in "$AGENTS_SRC"/*.md; do
         agent_name=$(basename "$agent_file")
+        lines=$(wc -l < "$agent_file")
         if [ -f "$AGENTS_DST/$agent_name" ]; then
-            echo "  $agent_name (overwrite existing)"
+            echo "  $agent_name ($lines lines) — overwrite existing"
         else
-            echo "  $agent_name (new)"
+            echo "  $agent_name ($lines lines) — new"
         fi
     done
+    if [ "$SERENA" = true ] && [ -d "$SERENA_SRC" ]; then
+        echo ""
+        echo "Serena overrides:"
+        for agent_file in "$SERENA_SRC"/*.md; do
+            agent_name=$(basename "$agent_file")
+            lines=$(wc -l < "$agent_file")
+            echo "  $agent_name ($lines lines) — Serena variant"
+        done
+    fi
     echo ""
     echo "[DRY RUN] No files were modified."
     exit 0
@@ -127,13 +150,26 @@ fi
 # Create target directory
 mkdir -p "$AGENTS_DST"
 
-# Copy agents
+# Copy base agents
 echo "Copying agents..."
 for agent_file in "$AGENTS_SRC"/*.md; do
     agent_name=$(basename "$agent_file")
+    lines=$(wc -l < "$agent_file")
     cp "$agent_file" "$AGENTS_DST/$agent_name"
-    echo "  $agent_name"
+    echo "  $agent_name ($lines lines)"
 done
+
+# Overwrite with Serena variants if requested
+if [ "$SERENA" = true ] && [ -d "$SERENA_SRC" ]; then
+    echo ""
+    echo "Applying Serena overrides..."
+    for agent_file in "$SERENA_SRC"/*.md; do
+        agent_name=$(basename "$agent_file")
+        lines=$(wc -l < "$agent_file")
+        cp "$agent_file" "$AGENTS_DST/$agent_name"
+        echo "  $agent_name ($lines lines) [Serena]"
+    done
+fi
 
 echo ""
 echo "=== Done ==="
