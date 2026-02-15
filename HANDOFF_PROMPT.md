@@ -1,52 +1,68 @@
 # cc_agents Modernization — Session Handoff
 
-> Paste this into a new Claude Code session started from `~/cc_agents/` to continue the agent modernization work.
+> Paste this into a new Claude Code session started from `~/cc_agents/`.
 
 ---
 
 ## Context
 
-cc_agents has been cleaned up and given a blank-slate rewrite for Opus 4.6. The old v2 system (6 agents, 5,697 lines, SQLite coordination, handoff protocols) has been archived to `archive/v2/`. Four lean agent definitions (~50 lines each) now live in `agents/`. A `deploy.sh` script pushes them to `~/.claude/agents/` for production use.
+cc_agents is a template repo for Claude Code agent definitions. It was rewritten from scratch for Opus 4.6 on 2026-02-09. The old v2 system (6 agents, 5,697 lines, SQLite coordination) is archived in `archive/v2/`.
 
-**Current state:**
-- `agents/scout.md` — codebase exploration (49 lines)
-- `agents/research.md` — technical research with citations (48 lines)
-- `agents/planner.md` — strategic planning and task decomposition (47 lines)
-- `agents/builder.md` — implementation with TDD (49 lines)
-- `deploy.sh` — deploys agents to `~/.claude/agents/` with backup
-- `archive/v2/` — full old system preserved for reference
-- `test_scenarios/` — 5 sample codebases for validation
+### Current State
 
-**What was removed and why:**
-- Orchestrator agent → Opus 4.6 handles orchestration natively via Task tool
-- Context Manager agent → `/compact` skill already handles this
-- SQLite coordination DB → over-engineered, agents communicate through Task tool results
-- Handoff protocol JSON schemas → unnecessary ceremony
+Four lean agent definitions (~50 lines each) in `agents/`:
+- `scout.md` — codebase exploration
+- `research.md` — technical research with citations
+- `planner.md` — strategic planning and task decomposition
+- `builder.md` — implementation with TDD
 
-**Git repositories (TWO separate repos — important):**
+Two deployment scripts:
+- `init.sh <project>` — copies agents into a project's `.claude/agents/` (project-level override)
+- `deploy.sh` — promotes agents to `~/.claude/agents/` (vanilla globals)
+
+### Architecture
+
+```
+~/.claude/agents/              ← vanilla defaults (global fallback)
+~/cc_agents/                   ← this repo (R&D + template)
+   ├── init.sh <project>       ← install experimental agents into project
+   └── deploy.sh               ← promote to vanilla globals
+
+~/my-project/.claude/agents/   ← experimental overrides (project-level)
+```
+
+**Resolution order:** Project `.claude/agents/` > Global `~/.claude/agents/`. This is Claude Code's native behavior — verified against official docs and community patterns. No custom infrastructure needed.
+
+**Testing workflow:**
+1. Edit agents in `~/cc_agents/agents/*.md`
+2. `./init.sh ~/test-project` to install into a test project
+3. Run Claude Code in that project — experimental agents are active
+4. `./init.sh ~/test-project --remove` to revert to vanilla
+5. When satisfied, `./deploy.sh` to promote to vanilla globals
+
+### Git Repos (TWO separate repos)
 
 | Repo | Location | GitHub | Purpose |
 |------|----------|--------|---------|
-| **cc_agents** | `~/cc_agents` | `jonzo97/cc_agents` | Agent R&D, experimentation, testing |
-| **.claude** | `~/.claude` | `jonzo97/.claude` | Production runtime (agents, skills, hooks, templates) |
+| **cc_agents** | `~/cc_agents` | `jonzo97/cc_agents` | Agent R&D, template, testing |
+| **.claude** | `~/.claude` | `jonzo97/.claude` | Production runtime (vanilla agents, skills, hooks, templates) |
 
-**Workflow:**
-1. Edit agents in `~/cc_agents/agents/*.md` (this repo)
-2. Test by running Claude Code sessions with the agents
-3. Run `./deploy.sh` to copy agents to `~/.claude/agents/`
-4. Commit in **both repos** when satisfied:
-   - `cd ~/cc_agents && git add -A && git commit -m "message" && git push`
-   - `cd ~/.claude && git add agents/ && git commit -m "message" && git push`
+cc_agents is the source of truth for agent definitions. Changes flow:
+`cc_agents/agents/ → init.sh → project/.claude/agents/` (testing)
+`cc_agents/agents/ → deploy.sh → ~/.claude/agents/` (promote to vanilla)
 
-**Do NOT edit agents directly in `~/.claude/agents/`** — changes there get overwritten by `deploy.sh`. Always edit in cc_agents first.
-
-The `.claude` repo also contains skills (`skills/`), hooks (`hooks/`), templates (`templates/`), and global config. Only the `agents/` directory is managed by cc_agents; everything else is edited directly in `.claude`.
+### What Was Removed and Why
+- **Orchestrator agent** → Opus 4.6 handles orchestration natively via Task tool
+- **Context Manager agent** → `/compact` skill handles this (but skill is marked for deprecation — see below)
+- **Constraint Generator agent** → moved to `/mnt/c/tcl_monster/.claude/agents/` (project-specific, FPGA only)
+- **SQLite coordination DB** → over-engineered, agents communicate through Task tool results
+- **Handoff protocol JSON schemas** → unnecessary ceremony
 
 ---
 
 ## Your Mission
 
-**Research-first modernization.** The agent definitions are lean but generic — they don't yet take advantage of what's new in Claude Code, the skills/hooks ecosystem, or community patterns. Before writing final agent definitions, you need to understand the landscape.
+**Research-first modernization.** The current agent definitions are lean but generic — they don't yet take advantage of what's new in Claude Code, the skills/hooks ecosystem, or community patterns. Before writing final agent definitions, you need to understand the landscape.
 
 ### Phase 1: Research (~20-30 min)
 
@@ -65,6 +81,7 @@ Use the **research agent** and **web search** heavily. Investigate:
    - Check `~/.claude/skills/` for existing skills and patterns
    - Are there community skill repos or registries?
    - How do skills interact with hooks?
+   - Check the official Anthropic skills repo: github.com/anthropics/skills
 
 3. **Claude Code Hooks system**
    - What hook events are available? (PreToolUse, PostToolUse, etc.)
@@ -72,17 +89,22 @@ Use the **research agent** and **web search** heavily. Investigate:
    - Can hooks trigger agents or skills?
    - What's the best practice for hook → agent coordination?
 
-4. **Community and ecosystem**
-   - Search for Claude Code agent patterns, best practices, example repos
+4. **Community patterns**
+   - Check these repos for patterns and ideas:
+     - `serpro69/claude-starter-kit` — template repo + bootstrap.sh
+     - `wshobson/agents` — 112 agents across 73 plugins
+     - `VoltAgent/awesome-claude-code-subagents` — 100+ specialized agents
+     - `davila7/claude-code-templates` — NPX installer approach
+     - `hesreallyhim/awesome-claude-code` — curated resource list
    - Look for what power users are doing with multi-agent setups
    - Check if Anthropic has published guidance on agent design for Opus 4.6
-   - Look for MCP server patterns that complement agent workflows
 
 5. **What's changed since October 2025**
    - The old system was built for Sonnet 3.5/4.0 era
    - What capabilities does Opus 4.6 have that make old patterns obsolete?
    - Has the Task tool API changed?
    - New tool types? New permission models?
+   - How does the new Teams/TeamCreate system work?
 
 ### Phase 2: Audit Existing Setup (~10-15 min)
 
@@ -91,7 +113,7 @@ Explore what's already deployed and working:
 1. **Scan `~/.claude/` thoroughly:**
    - `~/.claude/skills/*/SKILL.md` — read each skill, understand what it does
    - `~/.claude/hooks/` — read hook scripts, understand event handling
-   - `~/.claude/agents/` — compare deployed (old) vs cc_agents (new)
+   - `~/.claude/agents/` — current vanilla agents (should match cc_agents)
    - `~/.claude/tools/` — any custom tools?
    - `~/.claude/commands/` — legacy slash commands?
    - `~/.claude/templates/` — reusable templates
@@ -103,8 +125,8 @@ Explore what's already deployed and working:
 
 3. **Identify redundancy:**
    - Skills vs agents — what overlaps? What should be a skill vs an agent?
-   - agent-launcher skill vs direct Task tool usage — is the skill adding value?
-   - context-management skill vs native /compact — overlap?
+   - `agent-launcher` skill vs direct Task tool usage — is the skill adding value?
+   - `context-management` skill vs native `/compact` — overlap?
 
 ### Phase 3: Design Decisions (~10-15 min)
 
@@ -120,7 +142,7 @@ Based on research, decide:
 
 5. **New agents** — Based on research, are there agent types we're missing? (Reviewer? Tester? Documenter? Something domain-specific?)
 
-6. **Cross-project deployment** — The user works across tcl_monster, fpga_mcp, mchp-mcp-core, tool-porting. Should agents be project-aware? Should there be project-specific agent variants?
+6. **init.sh enhancements** — Should init.sh also copy skills or hooks? Should there be "profiles" (minimal, full, domain-specific)?
 
 ### Phase 4: Implement (~20-30 min)
 
@@ -129,11 +151,11 @@ Rewrite the agent definitions based on research findings. For each agent:
 - Reference available skills where relevant
 - Add domain awareness if research supports it
 - Keep them lean but make every line count
-- Test against at least one scenario from `test_scenarios/`
+- Test with `./init.sh` against a real project
 
-Update `deploy.sh` if the deployment model needs to change.
-
+Update `init.sh` and `deploy.sh` if the deployment model needs changes.
 Update `README.md` to reflect the final architecture.
+Commit and push to `jonzo97/cc_agents`.
 
 ---
 
@@ -151,17 +173,16 @@ The goal is to either replace the skill with something better or confirm that na
 
 ## Moved: constraint-generator agent
 
-`constraint-generator.md` was moved from `~/.claude/agents/` to `/mnt/c/tcl_monster/.claude/agents/` — it's FPGA-specific and belongs in that project, not globally.
+`constraint-generator.md` was moved from `~/.claude/agents/` to `/mnt/c/tcl_monster/.claude/agents/` — it's FPGA-specific and belongs in that project, not globally. This is an example of the right pattern: domain-specific agents live in project `.claude/`, generic agents live in `~/.claude/`.
 
 ---
 
 ## Important Notes
 
-- **Security:** Never access `~/mchp_cli_test` — restricted directory
-- **The user's global CLAUDE.md** at `~/.claude/CLAUDE.md` has extensive instructions about time estimation, TodoWrite usage, memory management. Read it.
+- **Security:** Never access `~/mchp_cli_test` — restricted directory.
+- **User's global CLAUDE.md** at `~/.claude/CLAUDE.md` has extensive instructions about time estimation, TodoWrite usage, memory management. Read it.
 - **The user prefers action over ceremony.** Don't over-plan. Research → decide → implement.
-- **Use TodoWrite** for task tracking (user checks via Ctrl+T)
-- **The `.claude` repo** (jonzo97/.claude) is the production deployment target. Don't push to it directly — use `deploy.sh`.
+- **Use TodoWrite** for task tracking (user checks via Ctrl+T).
 - **Old system reference:** `archive/v2/` has the full v2 system. The README.md, KNOWN_LIMITATIONS.md, and FEEDBACK_HISTORY.md are the most useful files for understanding what worked and what didn't.
 
 ---
@@ -170,21 +191,28 @@ The goal is to either replace the skill with something better or confirm that na
 
 ```bash
 # You're in ~/cc_agents/
-# 1. Read the current agents
+
+# 1. Read current agents
 cat agents/*.md
 
-# 2. Read the old system's lessons learned
+# 2. Read old system lessons
 cat archive/v2/KNOWN_LIMITATIONS.md
 cat archive/v2/FEEDBACK_HISTORY.md
 
-# 3. Launch research
-# Use the research agent or web search to investigate the landscape
+# 3. Research the landscape (use research agent + web search)
 
 # 4. Audit existing setup
 ls ~/.claude/skills/ ~/.claude/hooks/ ~/.claude/agents/ ~/.claude/tools/
 
-# 5. Design and implement
-# Update agents/*.md based on findings
-# Test with deploy.sh --dry-run
-# Deploy with deploy.sh
+# 5. Design and implement updated agents
+
+# 6. Test
+./init.sh ~/some-test-project
+# Run Claude Code session in ~/some-test-project, verify agents work
+./init.sh ~/some-test-project --remove
+
+# 7. Promote and commit
+./deploy.sh                # Update vanilla globals
+cd ~/cc_agents && git add -A && git commit -m "message" && git push
+cd ~/.claude && git add agents/ && git commit -m "message" && git push
 ```

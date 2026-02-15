@@ -1,70 +1,90 @@
 # cc_agents — Claude Code Agent R&D
 
-Agent definitions for Claude Code's Task tool system. This is the development/experimentation repo — tested agents get deployed to `~/.claude/agents/` via `./deploy.sh`.
+Template repo for Claude Code agent definitions. Experimental agents are developed here, then deployed into individual projects via `init.sh`.
 
-## Architecture (Opus 4.6 Era)
+## Architecture
 
-The main Claude instance IS the orchestrator. No separate orchestrator agent needed. The Task tool handles agent spawning natively.
+```
+~/.claude/agents/              ← vanilla defaults (global fallback)
+~/cc_agents/                   ← this repo (R&D + template)
+   └── init.sh <project>       ← copies experimental agents into project
 
-**4 agents:**
+~/my-project/.claude/agents/   ← experimental overrides (project-level)
+```
+
+**How it works:** Claude Code resolves agents with a clear precedence — project-level `.claude/agents/` overrides global `~/.claude/agents/`. So:
+
+- Projects WITHOUT `init.sh` applied → use vanilla global agents
+- Projects WITH `init.sh` applied → use experimental agents from this repo
+- To revert → `init.sh <project> --remove` (falls back to vanilla)
+
+This is the standard community pattern for sharing Claude Code configurations (see: serpro69/claude-starter-kit, davila7/claude-code-templates).
+
+## Agents (v3 — Opus 4.6 Era)
 
 | Agent | Model | Purpose | Lines |
 |-------|-------|---------|-------|
-| **scout** | Sonnet | Codebase exploration, architecture discovery | ~60 |
-| **research** | Sonnet | Technical research with citations | ~55 |
-| **planner** | Opus | Strategic planning, task decomposition | ~55 |
-| **builder** | Sonnet | Implementation with TDD workflow | ~60 |
+| **scout** | Sonnet | Codebase exploration, architecture discovery | ~50 |
+| **research** | Sonnet | Technical research with citations | ~50 |
+| **planner** | Opus | Strategic planning, task decomposition | ~50 |
+| **builder** | Sonnet | Implementation with TDD workflow | ~50 |
 
 **Removed from v2 (now handled natively by Claude):**
-- Orchestrator — Opus 4.6 does this natively
+- Orchestrator — Opus 4.6 does this natively via Task tool
 - Context Manager — `/compact` skill handles this
-- SQLite coordination DB — unnecessary overhead
-- Handoff protocol schemas — Task tool handles communication
+- Constraint Generator — moved to tcl_monster (project-specific)
 
 ## Usage
 
-### In any Claude Code session:
-```
-"Scout this project and tell me about the architecture"
-→ Claude spawns scout agent via Task tool
-
-"Research React Server Components best practices"
-→ Claude spawns research agent via Task tool
-
-"Plan the implementation for adding auth"
-→ Claude spawns planner agent via Task tool
-
-"Build the auth feature following the approved plan"
-→ Claude spawns builder agent via Task tool
-```
-
-Claude decides when to use which agent based on the request. No explicit orchestration needed.
-
-### Deploy to production:
+### Initialize a project with experimental agents
 ```bash
-./deploy.sh --dry-run  # Preview changes
-./deploy.sh            # Copy agents to ~/.claude/agents/
+./init.sh ~/some-project           # Install
+./init.sh ~/some-project --dry-run # Preview
+./init.sh ~/some-project --remove  # Revert to vanilla
 ```
 
-## Development
+### Promote experimental → vanilla globals
+```bash
+./deploy.sh           # Copy agents to ~/.claude/agents/
+./deploy.sh --dry-run # Preview
+```
 
-Edit agents in `agents/`. Test by running Claude Code sessions. When satisfied, deploy.
+### Workflow
+```
+1. Edit agents in cc_agents/agents/*.md
+2. Test: ./init.sh ~/test-project → run Claude Code there
+3. Iterate until satisfied
+4. Promote: ./deploy.sh → updates vanilla globals
+5. Commit both repos
+```
 
-### Testing
-The `test_scenarios/` directory has 5 sample codebases for validation:
-- `simple_cli` — Node.js CLI
-- `react_library` — React + TypeScript
-- `max_plugin` — Max for Live MIDI plugin
-- `legacy_codebase` — AngularJS 1.5
-- `empty_project` — Greenfield
+## Git Repositories
 
-### History
-The `archive/v2/` directory contains the full v2 system (6 agents, 5,697 lines, SQLite coordination, 7,700+ lines of docs) for reference.
+| Repo | Location | GitHub | Purpose |
+|------|----------|--------|---------|
+| **cc_agents** | `~/cc_agents` | `jonzo97/cc_agents` | Agent R&D, template, testing |
+| **.claude** | `~/.claude` | `jonzo97/.claude` | Production runtime (vanilla agents, skills, hooks) |
 
-## Repo Relationship
+**cc_agents** is the source of truth for agent definitions. Vanilla globals in `~/.claude/agents/` are updated via `deploy.sh` when experimental agents are proven.
+
+## File Structure
 
 ```
-cc_agents (this repo)     →  R&D, experimentation, testing
-    ↓ deploy.sh
-~/.claude/agents/ (.claude repo)  →  Production runtime
+cc_agents/
+├── agents/           # Agent definitions (the deliverable)
+│   ├── scout.md
+│   ├── research.md
+│   ├── planner.md
+│   └── builder.md
+├── init.sh           # Install agents into a project's .claude/
+├── deploy.sh         # Promote agents to ~/.claude/agents/ (vanilla globals)
+├── HANDOFF_PROMPT.md # Session handoff for continuing R&D
+├── test_scenarios/   # 5 sample codebases for validation
+└── archive/v2/       # Historical reference (old 6-agent system)
 ```
+
+## History
+
+- **v1** (2024) — Initial agent system
+- **v2** (Oct 2025) — 6 agents, 5,697 lines, SQLite coordination, Serena LSP
+- **v3** (Feb 2026) — 4 agents, 193 lines, lean for Opus 4.6, template-based deployment
