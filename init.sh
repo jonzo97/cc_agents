@@ -4,8 +4,11 @@
 # Usage:
 #   ./init.sh <project-path>                  # Copy base agents
 #   ./init.sh <project-path> --serena         # Copy Serena-enhanced variants
+#   ./init.sh <project-path> --teams          # Copy team workflow presets
+#   ./init.sh <project-path> --hooks          # Copy quality gate hooks
+#   ./init.sh <project-path> --commands       # Copy slash commands
+#   ./init.sh <project-path> --all            # Copy everything
 #   ./init.sh <project-path> --dry-run        # Preview what would be copied
-#   ./init.sh <project-path> --serena --dry-run
 #   ./init.sh <project-path> --remove         # Remove cc_agents from project
 #
 # Examples:
@@ -19,6 +22,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENTS_SRC="$SCRIPT_DIR/agents"
 SERENA_SRC="$SCRIPT_DIR/agents/serena"
+TEAMS_SRC="$SCRIPT_DIR/teams"
+HOOKS_SRC="$SCRIPT_DIR/hooks"
+COMMANDS_SRC="$SCRIPT_DIR/commands"
 
 # --- Argument parsing ---
 
@@ -30,6 +36,10 @@ if [ -z "$1" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo ""
     echo "Options:"
     echo "  --serena    Use Serena-enhanced variants for scout, builder, reviewer"
+    echo "  --teams     Copy team workflow presets to project"
+    echo "  --hooks     Copy quality gate hooks to project"
+    echo "  --commands  Copy slash commands (pipeline, team-status) to project"
+    echo "  --all       Copy everything (agents + serena + teams + hooks + commands)"
     echo "  --dry-run   Preview what would be copied without making changes"
     echo "  --remove    Remove cc_agents agents from project (revert to vanilla globals)"
     echo ""
@@ -46,13 +56,20 @@ shift
 
 MODE="init"
 SERENA=false
+TEAMS=false
+HOOKS=false
+COMMANDS=false
 
 for arg in "$@"; do
     case "$arg" in
-        --dry-run) MODE="dry-run" ;;
-        --remove)  MODE="remove" ;;
-        --serena)  SERENA=true ;;
-        *)         echo "Unknown option: $arg"; exit 1 ;;
+        --dry-run)   MODE="dry-run" ;;
+        --remove)    MODE="remove" ;;
+        --serena)    SERENA=true ;;
+        --teams)     TEAMS=true ;;
+        --hooks)     HOOKS=true ;;
+        --commands)  COMMANDS=true ;;
+        --all)       SERENA=true; TEAMS=true; HOOKS=true; COMMANDS=true ;;
+        *)           echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
 
@@ -66,10 +83,17 @@ fi
 PROJECT_NAME=$(basename "$PROJECT_PATH")
 AGENTS_DST="$PROJECT_PATH/.claude/agents"
 
+TEAMS_DST="$PROJECT_PATH/.claude/teams-presets"
+HOOKS_DST="$PROJECT_PATH/.claude/hooks"
+COMMANDS_DST="$PROJECT_PATH/.claude/commands"
+
 echo "=== cc_agents init ==="
 echo "Project:  $PROJECT_NAME ($PROJECT_PATH)"
 echo "Source:   $AGENTS_SRC"
-[ "$SERENA" = true ] && echo "Serena:   $SERENA_SRC (overrides for scout, builder, reviewer)"
+[ "$SERENA" = true ]   && echo "Serena:   $SERENA_SRC (overrides for scout, builder, reviewer)"
+[ "$TEAMS" = true ]    && echo "Teams:    $TEAMS_SRC → $TEAMS_DST"
+[ "$HOOKS" = true ]    && echo "Hooks:    $HOOKS_SRC → $HOOKS_DST"
+[ "$COMMANDS" = true ] && echo "Commands: $COMMANDS_SRC → $COMMANDS_DST"
 echo "Target:   $AGENTS_DST"
 echo "Mode:     $MODE"
 echo ""
@@ -142,6 +166,27 @@ if [ "$MODE" = "dry-run" ]; then
             echo "  $agent_name ($lines lines) — Serena variant"
         done
     fi
+    if [ "$TEAMS" = true ] && [ -d "$TEAMS_SRC" ]; then
+        echo ""
+        echo "Team presets:"
+        for f in "$TEAMS_SRC"/*.md; do
+            [ -f "$f" ] && echo "  $(basename "$f") ($(wc -l < "$f") lines)"
+        done
+    fi
+    if [ "$HOOKS" = true ] && [ -d "$HOOKS_SRC" ]; then
+        echo ""
+        echo "Quality gate hooks:"
+        for f in "$HOOKS_SRC"/*; do
+            [ -f "$f" ] && echo "  $(basename "$f") ($(wc -l < "$f") lines)"
+        done
+    fi
+    if [ "$COMMANDS" = true ] && [ -d "$COMMANDS_SRC" ]; then
+        echo ""
+        echo "Slash commands:"
+        for f in "$COMMANDS_SRC"/*.md; do
+            [ -f "$f" ] && echo "  $(basename "$f") ($(wc -l < "$f") lines)"
+        done
+    fi
     echo ""
     echo "[DRY RUN] No files were modified."
     exit 0
@@ -168,6 +213,49 @@ if [ "$SERENA" = true ] && [ -d "$SERENA_SRC" ]; then
         lines=$(wc -l < "$agent_file")
         cp "$agent_file" "$AGENTS_DST/$agent_name"
         echo "  $agent_name ($lines lines) [Serena]"
+    done
+fi
+
+# Copy team presets
+if [ "$TEAMS" = true ] && [ -d "$TEAMS_SRC" ]; then
+    echo ""
+    echo "Copying team presets..."
+    mkdir -p "$TEAMS_DST"
+    for preset_file in "$TEAMS_SRC"/*.md; do
+        [ -f "$preset_file" ] || continue
+        preset_name=$(basename "$preset_file")
+        lines=$(wc -l < "$preset_file")
+        cp "$preset_file" "$TEAMS_DST/$preset_name"
+        echo "  $preset_name ($lines lines)"
+    done
+fi
+
+# Copy quality gate hooks
+if [ "$HOOKS" = true ] && [ -d "$HOOKS_SRC" ]; then
+    echo ""
+    echo "Copying quality gate hooks..."
+    mkdir -p "$HOOKS_DST"
+    for hook_file in "$HOOKS_SRC"/*; do
+        [ -f "$hook_file" ] || continue
+        hook_name=$(basename "$hook_file")
+        lines=$(wc -l < "$hook_file")
+        cp "$hook_file" "$HOOKS_DST/$hook_name"
+        [ "${hook_name##*.}" = "sh" ] && chmod +x "$HOOKS_DST/$hook_name"
+        echo "  $hook_name ($lines lines)"
+    done
+fi
+
+# Copy slash commands
+if [ "$COMMANDS" = true ] && [ -d "$COMMANDS_SRC" ]; then
+    echo ""
+    echo "Copying slash commands..."
+    mkdir -p "$COMMANDS_DST"
+    for cmd_file in "$COMMANDS_SRC"/*.md; do
+        [ -f "$cmd_file" ] || continue
+        cmd_name=$(basename "$cmd_file")
+        lines=$(wc -l < "$cmd_file")
+        cp "$cmd_file" "$COMMANDS_DST/$cmd_name"
+        echo "  $cmd_name ($lines lines)"
     done
 fi
 

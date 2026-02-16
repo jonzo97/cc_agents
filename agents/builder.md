@@ -64,6 +64,19 @@ If something is wrong, stop and report rather than pushing forward.
 - **Jupyter notebooks:** Use NotebookEdit tool.
 - **Running commands:** Use Bash. Check exit codes.
 
+## Team Mode
+
+When spawned as a teammate (via TeamCreate/Task with team_name):
+
+1. **Check TaskList** on start — claim an unassigned, unblocked task with TaskUpdate (set owner to your name).
+2. **Coordinate file ownership** — if another builder is on the team, send a message to confirm which files each of you owns. Never edit files another builder is working on (causes merge conflicts).
+3. **Report progress** via SendMessage to the team lead after completing each task. Include test results and any blockers.
+4. **Mark task completed** via TaskUpdate immediately after implementation passes tests.
+5. **Check TaskList again** — claim next available unblocked task or go idle if none remain.
+6. **Escalate blockers** — if blocked, send a message to the team lead with what you tried and what you need. Don't spin.
+
+In solo mode (no team context), ignore this section entirely.
+
 ## What NOT To Do
 
 - Don't skip reading affected files before editing

@@ -67,6 +67,18 @@ Return a plan summary AND create TodoWrite tasks:
 - <where user input is needed before proceeding>
 ```
 
+## Team Mode
+
+When spawned as a teammate (via TeamCreate/Task with team_name):
+
+1. **Check TaskList** on start — claim an unassigned, unblocked task with TaskUpdate (set owner to your name).
+2. **Create tasks for others** — use TaskCreate to break the plan into tasks. Set `addBlockedBy` for dependency ordering. Leave owner empty so teammates can claim them.
+3. **Send plan summary** via SendMessage to the team lead when planning is complete. Include the plan overview and key decisions.
+4. **Mark your task completed** via TaskUpdate after creating all sub-tasks.
+5. **Assign tasks if leading** — if you're coordinating, use TaskUpdate with `owner` to assign tasks to idle teammates based on their specialization (scouts explore, researchers investigate, builders implement).
+
+In solo mode (no team context), ignore this section entirely.
+
 ## What NOT To Do
 
 - Don't write code — you create plans, Builder executes them

@@ -100,6 +100,161 @@ Ralph works best with the **builder agent**:
 - Not suitable for tasks that require human decision points mid-execution
 - Stop Hook mechanism may vary across Claude Code versions
 
+## Ralph v2
+
+Ralph v2 is an enhanced version with production-grade safety features and heuristic validation.
+
+### What's New vs v1
+
+**Dual-Condition Exit Gate:**
+- v1: Stops when Claude says "complete" (trusted signal only)
+- v2: Requires BOTH completion signal AND heuristic verification
+  - Heuristics: tests pass, git clean, all tasks marked done
+  - If signal detected but heuristics fail, forces continue with explanation
+
+**Cost Tracking:**
+- Track cumulative cost per iteration
+- Budget enforcement (stop when limit exceeded)
+- Cost visibility in progress logs
+
+**Repeated-Error Circuit Breaker:**
+- Detects when same error appears 2x consecutively
+- Uses error message hashing for comparison
+- Different from generic no-progress check (targets error loops)
+
+**Task-Aware Progress:**
+- Parses TodoWrite task lists from Claude's output
+- Tracks completed vs total tasks in state
+- Reports task progress in logs and continue prompts
+
+**Configurable Signals:**
+- Exit signals via `RALPH_EXIT_SIGNALS` env var
+- Blocker signals via `RALPH_BLOCKER_SIGNALS` env var
+- Customizable per project needs
+
+### Configuration (v2-specific)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RALPH_COST_BUDGET` | (empty = unlimited) | Stop when cumulative cost exceeds budget |
+| `RALPH_COST_PER_ITERATION` | 0.50 | Estimated cost per iteration in dollars |
+| `RALPH_EXIT_SIGNALS` | (see below) | Comma-separated completion signals |
+| `RALPH_BLOCKER_SIGNALS` | (see below) | Comma-separated blocker signals |
+| `RALPH_PROGRESS_FILE` | `.ralph-v2-progress.log` | v2 progress log (separate from v1) |
+| `RALPH_STATE_FILE` | `.ralph-v2-state.json` | v2 state file (separate from v1) |
+
+**Default exit signals:** `RALPH_COMPLETE,all tasks complete,all acceptance criteria met`
+
+**Default blocker signals:** `escalat,blocker,cannot proceed,giving up`
+
+### Quick Start (v2)
+
+```bash
+# Copy v2 script
+cp ralph/ralph-v2.sh /path/to/your-project/.claude/hooks/
+chmod +x /path/to/your-project/.claude/hooks/ralph-v2.sh
+
+# Configure Stop Hook with v2 script
+# Edit .claude/settings.json:
+{
+  "hooks": {
+    "Stop": [{
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/ralph-v2.sh",
+        "timeout": 30
+      }]
+    }]
+  }
+}
+
+# Set cost budget (optional)
+export RALPH_COST_BUDGET=5.00
+
+# Run with plan
+claude "Implement tasks in plan. Say RALPH_COMPLETE when done and all tests pass."
+```
+
+### Ralph Planner — Three-Phase Orchestration
+
+The `ralph-planner.sh` script orchestrates the full development lifecycle:
+
+**Phase 1: Requirements Refinement**
+- Claude asks clarifying questions
+- Explores edge cases and constraints
+- Outputs `.ralph-requirements.md`
+- Max 5 iterations (configurable)
+
+**Phase 2: Planning**
+- Reads requirements
+- Creates detailed implementation plan
+- Breaks down into TodoWrite tasks
+- Outputs `.ralph-plan.md`
+- Max 5 iterations (configurable)
+
+**Phase 3: Building**
+- Delegates to `ralph-v2.sh` autonomous loop
+- All v2 safety features apply
+- Implements plan tasks sequentially
+
+### Quick Start (Planner)
+
+```bash
+# Run all phases sequentially
+./ralph/ralph-planner.sh --phase all "Build a REST API for user management"
+
+# Or run phases individually
+./ralph/ralph-planner.sh --phase 1 "Build a REST API"  # Requirements
+./ralph/ralph-planner.sh --phase 2                      # Planning (reads requirements)
+./ralph/ralph-planner.sh --phase 3                      # Building (reads plan)
+
+# Configure max iterations per phase
+export RALPH_PHASE1_MAX_ITERATIONS=3
+export RALPH_PHASE2_MAX_ITERATIONS=5
+```
+
+### State Files (v2)
+
+Ralph v2 creates separate state files to avoid conflicts with v1:
+
+- `.ralph-v2-state.json` — Iteration, cost, error tracking, task counts
+- `.ralph-v2-progress.log` — Timestamped iteration log with cost/tasks
+- `.ralph-planner-state.json` — Phase tracking (if using planner)
+- `.ralph-requirements.md` — Requirements doc (phase 1 output)
+- `.ralph-plan.md` — Implementation plan (phase 2 output)
+
+Add to `.gitignore`:
+```
+.ralph*.json
+.ralph*.log
+.ralph-requirements.md
+.ralph-plan.md
+```
+
+### Dual-Condition Gate Example
+
+```
+Claude outputs: "All tasks complete! Tests passing. Ready to ship."
+
+Ralph v2 checks:
+  ✓ Completion signal detected ("all tasks complete")
+  Running heuristics...
+    ✓ Tests pass (pytest)
+    ✗ Git has uncommitted changes
+    ✓ All tasks marked complete (5/5)
+
+Gate: FAILED (git dirty)
+Decision: Force continue with explanation
+
+Output:
+{
+  "decision": "block",
+  "reason": "You said you're complete, but verification failed.
+             Tests: PASS, Git: dirty, Tasks: 5/5.
+             Commit your changes before stopping."
+}
+```
+
 ## References
 
 - [snarktank/ralph](https://github.com/snarktank/ralph) — Original community implementation

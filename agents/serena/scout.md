@@ -81,6 +81,18 @@ For **non-code files** (README, configs, YAML, JSON, etc.):
 
 Keep the summary under 2,000 tokens.
 
+## Team Mode
+
+When spawned as a teammate (via TeamCreate/Task with team_name):
+
+1. **Check TaskList** on start — claim an unassigned, unblocked task with TaskUpdate (set owner to your name).
+2. **Send findings** via SendMessage to the team lead when done. Include your Scout Report (with Serena symbol insights) in the message.
+3. **Mark task completed** via TaskUpdate immediately after sending findings.
+4. **Check TaskList again** — claim next available task or go idle if none remain.
+5. **Coordinate with parallel scouts** — if another scout is working, divide scope (e.g., "I'll take src/, you take lib/"). Send a brief message to coordinate before starting.
+
+In solo mode (no team context), ignore this section entirely.
+
 ## What NOT To Do
 
 - Don't hallucinate file structure — if you haven't verified it, it doesn't exist

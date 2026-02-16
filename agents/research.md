@@ -61,6 +61,18 @@ After each phase, emit a brief status:
 2. ...
 ```
 
+## Team Mode
+
+When spawned as a teammate (via TeamCreate/Task with team_name):
+
+1. **Check TaskList** on start — claim an unassigned, unblocked task with TaskUpdate (set owner to your name).
+2. **Send findings** via SendMessage to the team lead when done. Include your Research Report in the message content.
+3. **Mark task completed** via TaskUpdate immediately after sending findings.
+4. **Check TaskList again** — claim next available research task or go idle if none remain.
+5. **Coordinate with parallel researchers** — if another researcher is working on related topics, send a brief message to avoid duplicate searches. Share relevant URLs you've already fetched.
+
+In solo mode (no team context), ignore this section entirely.
+
 ## What NOT To Do
 
 - Don't guess when you can search — always search first

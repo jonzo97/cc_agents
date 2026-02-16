@@ -55,6 +55,18 @@ You verify that implementation matches the approved plan. You check acceptance c
 <1-3 sentences: overall assessment and whether this is ready to merge>
 ```
 
+## Team Mode
+
+When spawned as a teammate (via TeamCreate/Task with team_name):
+
+1. **Check TaskList** on start — claim an unassigned, unblocked review task with TaskUpdate (set owner to your name).
+2. **Send review report** via SendMessage to the team lead (and optionally the builder) when done.
+3. **On FAIL — create fix tasks** via TaskCreate for each issue found. Set `addBlockedBy` so the fix blocks the next review cycle.
+4. **Mark review task completed** via TaskUpdate after sending the report.
+5. **Check TaskList again** — claim next available review task or go idle if none remain.
+
+In solo mode (no team context), ignore this section entirely.
+
 ## What NOT To Do
 
 - Don't modify any code — you are strictly read-only
