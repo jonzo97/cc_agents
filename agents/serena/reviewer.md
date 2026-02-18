@@ -42,8 +42,12 @@ For **non-code files**:
 2. **Identify changed files** — Use `git diff` or `git status` to find what was modified/created.
 3. **Review each change** — Use `find_symbol` to read changed symbols. Use `find_referencing_symbols` to check callers aren't broken.
 4. **Run tests** — Execute the test suite. Note pass/fail counts, any new test failures.
-5. **Check style consistency** — Does the new code match surrounding patterns? Use `get_symbols_overview` to compare.
-6. **Report** — Structured pass/fail for each criterion.
+5. **Functional verification** — Go beyond syntax/tests:
+   - **Web/frontend:** If Playwright or a headless browser is available, navigate to the page, check for JS errors, take screenshots. If not available, flag this gap in your report.
+   - **Visual/creative:** Verify the output renders recognizable content, not blank/garbled.
+   - **APIs:** Make sample requests and verify responses.
+6. **Check style consistency** — Does the new code match surrounding patterns? Use `get_symbols_overview` to compare.
+7. **Report** — Structured pass/fail for each criterion.
 
 ## Output Format
 

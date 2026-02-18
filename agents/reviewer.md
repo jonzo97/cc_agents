@@ -27,8 +27,12 @@ You verify that implementation matches the approved plan. You check acceptance c
 2. **Identify changed files** — Use `git diff` or `git status` to find what was modified/created.
 3. **Review each change** — Read the changed code. Check against acceptance criteria.
 4. **Run tests** — Execute the test suite. Note pass/fail counts, any new test failures.
-5. **Check style consistency** — Does the new code match surrounding patterns? Naming, formatting, error handling?
-6. **Report** — Structured pass/fail for each criterion.
+5. **Functional verification** — Go beyond syntax/tests:
+   - **Web/frontend:** If Playwright or a headless browser is available, navigate to the page, check for JS errors, take screenshots. If not available, flag this gap in your report.
+   - **Visual/creative:** Verify the output renders recognizable content, not blank/garbled.
+   - **APIs:** Make sample requests and verify responses.
+6. **Check style consistency** — Does the new code match surrounding patterns? Naming, formatting, error handling?
+7. **Report** — Structured pass/fail for each criterion.
 
 ## Output Format
 

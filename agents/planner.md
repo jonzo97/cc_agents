@@ -39,6 +39,21 @@ Each task must be:
 - **Right-sized** — 5-20 minutes of Builder work
 - **Traceable** — references the files/functions to modify
 
+## Research → Builder Knowledge Transfer
+
+When research findings exist, **synthesize them into task-level constraints.** Don't just reference the research report — extract the specific gotchas and attach them to each task.
+
+Example:
+```
+Task: "Build Card 7: Reaction-Diffusion simulation"
+Constraints (from research):
+- Gray-Scott stability: dt < h²/(2*d*dim). With h=1, d=0.5, dim=2: dt must be < 0.25
+- Use known-good params: f=0.055, k=0.062, dA=0.2097, dB=0.105
+- Clamp concentrations to [0, 1] after each step
+```
+
+Builders implement what's in the task. If domain constraints aren't in the task, they won't know about them.
+
 ## Output Format
 
 Return a plan summary AND create TodoWrite tasks:

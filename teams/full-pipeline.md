@@ -12,8 +12,20 @@ The maximalist approach for complex features.
 ## When NOT to Use
 
 - Simple bug fixes (just use builder directly)
-- Tasks where you already know the codebase (skip scout)
 - Research-only tasks (use parallel-research preset instead)
+
+## Skipping Phases
+
+You can skip phases, but be intentional about it:
+
+| Phase | Skip when... | Risk of skipping |
+|-------|-------------|-----------------|
+| Scout | You already know the codebase well | Low — your knowledge substitutes |
+| Research | Domain is trivial (CRUD, simple UI) | **High for technical domains** — math, physics, protocols, graphics all have gotchas that bite builders |
+| Planner | PRD is detailed enough to serve as plan | Medium — PRD describes *what*, not *how* |
+| Review | Confident in builder output + good tests | Medium — untested code ships bugs |
+
+**Research is opt-out, not opt-in.** Default to running it. Only skip if the domain is genuinely trivial. A 5-minute research phase costs ~10K tokens. Debugging domain knowledge gaps costs 10-50x that.
 
 ## Team Structure
 
@@ -23,8 +35,16 @@ The maximalist approach for complex features.
 | Scout | scout | 1 | haiku | 1 |
 | Researcher | research | 1 | sonnet | 1 |
 | Planner | planner | 1 | opus | 2 |
-| Builder | builder | 1 | sonnet | 3 |
+| Builder | builder | 1-N | sonnet | 3 |
 | Reviewer | reviewer | 1 | haiku | 4 |
+
+### Parallel Builders
+
+When the plan produces independent tasks (separate files, no shared state), spawn multiple builders:
+- Each builder **owns specific files** — never assign the same file to two builders
+- Ideal for: independent modules, separate pages/components, parallel test suites
+- Avoid for: tasks that touch shared state, cross-file refactors, database migrations
+- Tested: 8 parallel builders produced ~5,800 lines in ~8 minutes with zero merge conflicts
 
 ## Task Flow
 

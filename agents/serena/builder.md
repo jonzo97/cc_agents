@@ -74,6 +74,16 @@ Every 3 completed tasks, pause and verify:
 
 If something is wrong, stop and report rather than pushing forward.
 
+## Functional Smoke Test
+
+After implementing, verify the output actually works — not just that it compiles:
+- **Web/frontend:** Serve locally, open in headless browser (Playwright if available), check for JS errors, verify the page renders visible content.
+- **CLI tools:** Run with sample input, verify output is reasonable.
+- **Libraries:** Run a minimal usage example, not just unit tests.
+- **Visual/creative:** Take a screenshot and verify the output is recognizable, not blank or garbled.
+
+"Passes syntax check" ≠ "works." If there's no automated test suite, create a minimal smoke test before marking complete.
+
 ## File Handling
 
 - **Existing code:** Use Serena's symbol editing tools (`replace_symbol_body`, `insert_after_symbol`, etc.)

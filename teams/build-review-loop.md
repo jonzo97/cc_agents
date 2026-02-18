@@ -65,9 +65,10 @@ Cycle 2 (if needed):
 
 - Builder and reviewer should NOT work on the same files simultaneously.
 - The reviewer is read-only — it creates fix tasks, it doesn't fix code.
-- Max 3 review cycles. If still failing, escalate to human.
+- Default max 3 review cycles. For complex domains (math, graphics, protocols), allow up to 5. If still failing, escalate to human.
 - For Serena-enabled projects, use serena/builder and serena/reviewer variants.
 - Combine with Ralph (stop hook) for fully autonomous build loops.
+- **For visual/frontend projects:** The reviewer should use Playwright (or similar headless browser) to take screenshots and verify functional output. Syntax-only review is insufficient for UI work.
 
 ## Integration with Ralph
 
