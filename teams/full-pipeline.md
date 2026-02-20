@@ -52,6 +52,7 @@ You can skip phases, but be intentional about it:
 | Researcher | research | 1 | sonnet | 1 |
 | Planner | planner | 1 | opus | 2 |
 | Builder | builder | 1-N | sonnet | 3 |
+| Tester | tester | 1 | sonnet | 3 |
 | Reviewer | reviewer | 1 | haiku | 4 |
 
 ### Parallel Builders
@@ -72,13 +73,17 @@ Phase 1: Discovery (parallel, ~3-5 min)
 Phase 2: Planning (sequential, ~5 min)
 └── Planner: Synthesize findings → Implementation Plan + TaskCreate
 
-Phase 3: Build (sequential, ~10-30 min)
-└── Builder: Implement plan tasks → Code changes + tests
+Phase 3: Build + Test (inner loop, ~10-30 min)
+├── Builder: Implement plan tasks → Code changes
+└── Tester: Test each task as builder completes it
+    ├── PASS → Builder moves to next task
+    └── FAIL → Tester creates fix tasks → Builder fixes → Tester re-tests
+    (max 3 fix cycles per task)
 
-Phase 4: Review (sequential, ~3 min)
-└── Reviewer: Validate implementation → Review Report
+Phase 4: Review (outer gate, ~3 min)
+└── Reviewer: Final acceptance check on all changes
     ├── PASS → Done, ship it
-    └── FAIL → Fix tasks created → Builder picks up → Re-review
+    └── FAIL (architecture) → Re-plan → restart Phase 3 (max 1 re-plan)
 ```
 
 ## Setup Steps
@@ -116,12 +121,14 @@ Phase 4: Review (sequential, ~3 min)
    Task with team_name, subagent_type "planner", name "planner"
    ```
 
-4. **When Phase 2 completes (plan approved), spawn Phase 3:**
+4. **When Phase 2 completes (plan approved), spawn Phase 3 (builder + tester):**
    ```
    Task with team_name, subagent_type "builder", name "builder"
+   Task with team_name, subagent_type "general-purpose", name "tester"
    ```
+   Tester uses `agents/tester.md` prompt. Both run concurrently — tester claims test tasks as builder completes implementation tasks. Inner loop: build → test → fix → test per task.
 
-5. **When Phase 3 completes, spawn Phase 4:**
+5. **When all Phase 3 tasks pass, spawn Phase 4:**
    ```
    Task with team_name, subagent_type "general-purpose", name "reviewer"
    ```
@@ -134,7 +141,7 @@ Each phase transition is a natural checkpoint:
 |-----------|------|-------------|
 | 1 → 2 | Both scout + research tasks completed | Optional: review findings |
 | 2 → 3 | Plan created, tasks defined | **Recommended: approve plan** |
-| 3 → 4 | All build tasks completed, tests pass | Optional: quick manual check |
+| 3 → 4 | All build tasks pass inner loop (builder + tester) | Optional: quick manual check |
 | 4 → done | Review PASS | Optional: final review |
 
 ## Tips

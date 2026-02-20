@@ -14,23 +14,40 @@ Builder implements, reviewer validates, fix loop until PASS. The core quality pa
 |------|-------|-------|-------|
 | Lead | You (main Claude) | 1 | opus |
 | Builder | builder | 1 | sonnet |
+| Tester | tester | 1 | sonnet |
 | Reviewer | reviewer | 1 | haiku |
 
-## Task Flow
+## Architecture: Inner Loop + Outer Gate
 
 ```
-Cycle 1:
-├── Builder: Implement tasks, run tests, commit
-└── Reviewer: Review changes, run tests, report PASS/FAIL
-    ├── PASS → Done
-    └── FAIL → Reviewer creates fix tasks → Cycle 2
+                INNER LOOP (fast, per-task)
+                ┌──────────────────────────┐
+                │                          │
+Plan → Build task → Test → PASS → next task → ... → all tasks done
+                │                          │
+                └── FAIL → fix task ───────┘
+                          (max 3 per task)
 
-Cycle 2 (if needed):
-├── Builder: Fix issues from review
-└── Reviewer: Re-review fixes
-    ├── PASS → Done
-    └── FAIL → Cycle 3 (max 3 cycles, then escalate to human)
+                OUTER GATE (once, after all tasks)
+All tasks done → Review → PASS → Done
+                    │
+                    └── FAIL (architecture) → Re-plan → restart inner loop
+                         (max 1 re-plan)
 ```
+
+### Inner Loop (Builder ↔ Tester)
+
+After each builder task completes, the tester runs immediately:
+- **PASS** — builder moves to next task
+- **FAIL** — tester creates fix tasks, builder picks them up
+- Max 3 fix attempts per task. If still failing, escalate to human.
+
+### Outer Gate (Reviewer)
+
+After ALL tasks pass the inner loop, the reviewer does a final acceptance check:
+- **PASS** — done, ship it
+- **FAIL with fix tasks** — builder picks them up, tester re-validates
+- **FAIL with architecture flag** — planner re-plans (max 1 re-plan cycle, then escalate)
 
 ## Setup Steps
 
@@ -47,19 +64,27 @@ Cycle 2 (if needed):
      → addBlockedBy: [impl-task-1, impl-task-2]
    ```
 
-3. **Spawn builder:**
+3. **Spawn builder + tester:**
    ```
    Task with team_name, subagent_type "builder", name "builder-1"
+   Task with team_name, subagent_type "general-purpose", name "tester-1"
    ```
+   Tester uses `agents/tester.md` prompt. Both run concurrently — tester claims test tasks as builder completes implementation tasks.
 
-4. **Spawn reviewer** (after builder finishes or as blocked task):
+4. **Inner loop runs automatically:**
+   - Builder completes task → tester picks up test task
+   - PASS → builder continues; FAIL → tester creates fix tasks → builder picks them up
+   - Max 3 fix cycles per task
+
+5. **Spawn reviewer** (after all tasks pass inner loop):
    ```
    Task with team_name, subagent_type "general-purpose", name "reviewer-1"
    ```
 
-5. **Handle review results:**
+6. **Handle review results:**
    - PASS: Merge/commit, shut down team
-   - FAIL: Reviewer creates fix tasks, builder picks them up automatically
+   - FAIL with fixes: Builder picks up fix tasks, tester re-validates
+   - FAIL with architecture flag: Re-plan (max 1 cycle, then escalate to human)
 
 ## Tips
 

@@ -12,8 +12,8 @@ Captured improvements and research tasks for future sessions.
 ## Deep Research
 
 - [ ] **Research deep-research automation** — Investigate DeerFlow, LangChain, and other frameworks for automating the Gemini Deep Research handoff. Goal: reduce the manual copy-paste step. Check if Gemini has programmatic access yet, or if DeerFlow/LangChain can orchestrate multi-model research pipelines.
-- [ ] **Build `research-liaison` agent** — Agent that specializes in writing research prompts and squeezing outputs. See `docs/deep-research-workflow.md`.
-- [ ] **Build `/deep-research` command** — Slash command that generates the prompt, sets up the directory, and after user pastes the output, runs squeeze → PRD → pipeline.
+- [x] ~~**Build `research-liaison` agent**~~ — Done. See `agents/research-liaison.md`.
+- [ ] **Build `/deep-research` command** — Agent exists (`research-liaison`), command TBD. Slash command that generates the prompt, sets up the directory, and after user pastes the output, runs squeeze → PRD → pipeline.
 
 ## Cross-Project
 

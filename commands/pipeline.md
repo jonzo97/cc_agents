@@ -81,25 +81,34 @@ Task with team_name, subagent_type "planner", name "planner-1", model "opus"
 
 If `plan-only` scope: stop here, show plan summary, clean up team.
 
-### 6. Phase 3: Build
+### 6. Phase 3: Build + Test (Inner Loop)
 
-After plan approval, spawn builder:
+After plan approval, spawn builder and tester concurrently:
 ```
 Task with team_name, subagent_type "builder", name "builder-1", model "sonnet"
+Task with team_name, subagent_type "general-purpose", name "tester-1", model "sonnet"
 ```
 
-The builder works through all tasks created by the planner. Monitor via TaskList.
+The tester uses `agents/tester.md` prompt. Inner loop per task:
+1. Builder completes an implementation task
+2. Tester picks up the corresponding test task, runs tests, analyzes output
+3. **PASS** — builder moves to next task
+4. **FAIL** — tester creates fix tasks with root cause analysis, builder picks them up
+5. Max 3 fix cycles per task. If still failing, escalate to human.
 
-### 7. Phase 4: Review
+Monitor via TaskList. The inner loop runs automatically through task dependencies.
 
-After builder completes all tasks, spawn reviewer:
+### 7. Phase 4: Review (Outer Gate)
+
+After ALL tasks pass the inner loop, spawn reviewer:
 ```
 Task with team_name, subagent_type "general-purpose", name "reviewer-1", model "haiku"
 ```
 
 Handle review results:
 - **PASS**: Report success, clean up team
-- **FAIL**: Create fix tasks from review feedback, re-spawn builder, then re-review (max 3 cycles)
+- **FAIL with fix tasks**: Builder picks them up, tester re-validates
+- **FAIL with architecture flag**: Re-plan via planner (max 1 re-plan cycle, then escalate to human)
 
 ### 8. Completion
 

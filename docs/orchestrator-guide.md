@@ -147,6 +147,26 @@ Constraints (from research):
 
 ---
 
+## Testing Strategy Detection
+
+During pre-flight, detect project type and note which testing strategy applies. Pass this to the tester agent as context when spawning.
+
+| Project Signal | Strategy | What Tester Does |
+|---------------|----------|-----------------|
+| `Makefile`, `.c/.h`, `CMakeLists.txt` | Compilation | Run build, parse compiler errors (file:line:col) |
+| `package.json` + web framework | Web/Visual | Playwright screenshots, DOM assertions, console errors |
+| `pytest.ini`, `pyproject.toml` (pytest) | Python suite | `pytest -v --tb=short`, parse tracebacks |
+| `jest.config`, `vitest.config` | JS suite | Run test runner, parse assertion failures |
+| `docker-compose.yml` + API routes | API/Integration | curl/httpie against endpoints, validate responses |
+| Agent/pipeline output | Orchestration | Verify expected files, output schema, error logs |
+
+**Pre-flight action:** After detecting project type, include the testing strategy in the tester's spawn prompt:
+> "This is a Python project with pytest. Run `pytest -v --tb=short` and parse tracebacks for root cause."
+
+For web projects, check Playwright availability and suggest installation if missing (see [Tool Catalog](tool-catalog.md)).
+
+---
+
 ## During Orchestration
 
 ### Research → Planner Handoff
