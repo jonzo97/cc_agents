@@ -2,7 +2,7 @@
 
 A repeatable system for writing research prompts (for Gemini Deep Research or similar), ingesting results, extracting actionable insights, and producing PRDs.
 
-**Status:** Pattern defined. Agent and command to be built.
+**Status:** Agent built (`agents/research-liaison.md`). Command TBD.
 
 ---
 
