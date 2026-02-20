@@ -15,12 +15,27 @@ A repeatable system for writing research prompts (for Gemini Deep Research or si
      ↓           (user pastes or saves file)
 3. SQUEEZE      Extract every actionable insight, pattern, constraint
      ↓           (CC agent — "juice the citrus")
-4. PRD          Generate implementation-ready PRD from extracted insights
+4. TRIAGE       Route extracted insights to the right destination
+     ↓           (see Output Routing below)
+5. PRD          Generate implementation-ready PRD (if building something)
      ↓           (CC agent — structured output)
-5. EXECUTE      Run the PRD through the pipeline
+6. EXECUTE      Run the PRD through the pipeline
      ↓           (/pipeline or manual build)
-6. ARCHIVE      Store prompt + output + PRD for reference, discard husk
+7. ARCHIVE      Store prompt + output + extract + PRD for reference
 ```
+
+## Output Routing
+
+Not every research output becomes a PRD. After squeezing, triage each insight:
+
+| Destination | When | What Happens Next |
+|-------------|------|-------------------|
+| **PRD → build** | Research reveals something actionable to implement | Generate PRD, run `/pipeline` |
+| **Best practices doc** | Research reveals patterns, constraints, or conventions | Write to `cc_agents/docs/` as reference material |
+| **NotebookLM podcast** | Research covers broad concepts good for personal learning | Upload to NotebookLM, generate audio overview |
+| **Topic file** | Research surfaces tools, repos, or links to explore later | Add to `second-brain/topics/` |
+
+A single research output often routes to multiple destinations. The squeeze phase should tag each extracted insight with its destination.
 
 ## Directory Structure
 
