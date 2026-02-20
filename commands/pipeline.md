@@ -24,13 +24,31 @@ When the user invokes `/pipeline <task>`, execute the following orchestration:
 - Create a team: `TeamCreate` with team_name `pipeline-<short-task-slug>`
 - Announce: "Starting pipeline for: <task>"
 
-### 2. Determine Scope
+### 2. Pre-Flight (before spawning any agents)
 
-- **Full pipeline** (default): All 4 phases
+Run the pre-flight protocol from the [Orchestrator Guide](../docs/orchestrator-guide.md):
+
+1. **Scout the project** — Quick-scan CLAUDE.md, package.json/pyproject.toml, test config, CI config. Infer language, framework, test runner, existing patterns.
+
+2. **Check tool availability** — Consult the [Tool Catalog](../docs/tool-catalog.md). If a high-impact tool (Playwright, jq, etc.) would unlock autonomous operation for this task, suggest it now. Example:
+   > "This is a web project. Playwright would let me verify visually without asking you to check. Want me to set it up?"
+
+3. **Ask 2-3 targeted questions** — Only ask what you couldn't infer from code inspection. Use structured options:
+   - Scope: "This touches X, Y, Z. Should I include all of them, or focus on [specific area]?"
+   - Acceptance criteria: "What does 'done' look like? [Option A] [Option B] [Other]"
+   - Research need: "This involves [specialized domain]. Research first? [Yes - ~5min] [No - I know this]"
+
+4. **Flag research needs** — Apply the research decision tree. If the domain is specialized (math, physics, protocols, crypto) or involves post-cutoff libraries, research is mandatory. Otherwise, flag and let the user decide.
+
+**Max 2-3 questions total.** Don't front-load a questionnaire. If in doubt, proceed and interrupt at Tier 2 checkpoints later.
+
+### 3. Determine Scope
+
+- **Full pipeline** (default): All phases
 - **plan-only**: Phases 1-2 only (discovery + planning). Stop after plan is created.
 - **build-only**: Phases 3-4 only (build + review). Assumes plan already exists in TodoWrite.
 
-### 3. Phase 1: Discovery (parallel)
+### 4. Phase 1: Discovery (parallel)
 
 Create and run in parallel:
 
@@ -47,7 +65,7 @@ Task with team_name, subagent_type "research", name "researcher-1", model "sonne
 
 Wait for both to complete. Collect findings.
 
-### 4. Phase 2: Planning
+### 5. Phase 2: Planning
 
 Create planning task (blocked by discovery):
 ```
@@ -63,7 +81,7 @@ Task with team_name, subagent_type "planner", name "planner-1", model "opus"
 
 If `plan-only` scope: stop here, show plan summary, clean up team.
 
-### 5. Phase 3: Build
+### 6. Phase 3: Build
 
 After plan approval, spawn builder:
 ```
@@ -72,7 +90,7 @@ Task with team_name, subagent_type "builder", name "builder-1", model "sonnet"
 
 The builder works through all tasks created by the planner. Monitor via TaskList.
 
-### 6. Phase 4: Review
+### 7. Phase 4: Review
 
 After builder completes all tasks, spawn reviewer:
 ```
@@ -83,7 +101,7 @@ Handle review results:
 - **PASS**: Report success, clean up team
 - **FAIL**: Create fix tasks from review feedback, re-spawn builder, then re-review (max 3 cycles)
 
-### 7. Completion
+### 8. Completion
 
 - Summarize what was done: files changed, tests passing, key decisions
 - Send shutdown_request to all teammates

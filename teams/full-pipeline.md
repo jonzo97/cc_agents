@@ -14,6 +14,24 @@ The maximalist approach for complex features.
 - Simple bug fixes (just use builder directly)
 - Research-only tasks (use parallel-research preset instead)
 
+## Research: Default-On
+
+Research is **opt-out, not opt-in.** Apply this decision tree before every pipeline run:
+
+```
+Is the domain specialized (math / physics / graphics / protocols / crypto)?
+├── YES → Research mandatory. Findings flow to builder tasks as constraints.
+└── NO → Is the library well-known AND the task standard?
+    ├── YES → Skip research. Proceed to planning.
+    └── NO → Flag it:
+         "This involves [X] which may have gotchas.
+          Run research first? [Yes - ~5min] [No - I know this domain]"
+```
+
+**Cost math:** A 5-minute research phase costs ~10K tokens. Debugging domain knowledge gaps costs 10-50x that. When in doubt, research.
+
+**Research findings must flow to builders.** The planner extracts specific constraints from research and attaches them to each TaskCreate call. A research report that the planner reads but doesn't propagate is wasted work. See the [Orchestrator Guide](../docs/orchestrator-guide.md#research-flagging) for the full research-to-task pipeline.
+
 ## Skipping Phases
 
 You can skip phases, but be intentional about it:
@@ -21,11 +39,9 @@ You can skip phases, but be intentional about it:
 | Phase | Skip when... | Risk of skipping |
 |-------|-------------|-----------------|
 | Scout | You already know the codebase well | Low — your knowledge substitutes |
-| Research | Domain is trivial (CRUD, simple UI) | **High for technical domains** — math, physics, protocols, graphics all have gotchas that bite builders |
+| Research | Domain is trivial (CRUD, simple UI) — use decision tree above | **High for technical domains** — math, physics, protocols, graphics all have gotchas that bite builders |
 | Planner | PRD is detailed enough to serve as plan | Medium — PRD describes *what*, not *how* |
 | Review | Confident in builder output + good tests | Medium — untested code ships bugs |
-
-**Research is opt-out, not opt-in.** Default to running it. Only skip if the domain is genuinely trivial. A 5-minute research phase costs ~10K tokens. Debugging domain knowledge gaps costs 10-50x that.
 
 ## Team Structure
 

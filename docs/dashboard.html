@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cc_agents Architecture Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39d2c0;
+    --pink: #f778ba;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header .version {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .header p {
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* Grid layout */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .grid .full-width { grid-column: 1 / -1; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card h2 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .icon { font-size: 1rem; }
+
+  /* Agent cards */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+  .agent {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .agent:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px rgba(88, 166, 255, 0.1);
+  }
+  .agent .emoji { font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .agent .name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+  .agent .model {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 1px 8px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  .model-opus { background: rgba(188, 140, 255, 0.15); color: var(--purple); }
+  .model-sonnet { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .model-haiku { background: rgba(57, 210, 192, 0.15); color: var(--cyan); }
+  .agent .desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .agent .serena-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 0.6rem;
+    background: rgba(247, 120, 186, 0.15);
+    color: var(--pink);
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  /* Pipeline flow */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  .phase {
+    flex: 1;
+    min-width: 140px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .phase:hover {
+    border-color: var(--green);
+    box-shadow: 0 0 15px rgba(63, 185, 80, 0.08);
+  }
+  .phase .phase-num {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+  .phase .phase-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .phase .phase-agents {
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+  .phase .phase-time {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+  }
+  .arrow {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    padding: 0 0.3rem;
+    flex-shrink: 0;
+  }
+  .checkpoint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 0.2rem;
+  }
+  .checkpoint .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--orange);
+    margin-bottom: 2px;
+  }
+  .checkpoint .label {
+    font-size: 0.55rem;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  /* v4.2 modules */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .module {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.2s;
+  }
+  .module:hover {
+    border-color: var(--green);
+    transform: translateY(-1px);
+  }
+  .module .tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  .tag-f { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .tag-g { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .tag-h { background: rgba(210, 153, 34, 0.15); color: var(--orange); }
+  .module .mod-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+  .module .mod-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .module .mod-files {
+    margin-top: 0.6rem;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+  .module .mod-files code {
+    background: rgba(88, 166, 255, 0.08);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+  }
+
+  /* File tree */
+  .file-tree {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+  .file-tree .dir { color: var(--accent); font-weight: 600; }
+  .file-tree .file { color: var(--text-dim); }
+  .file-tree .new { color: var(--green); }
+  .file-tree .changed { color: var(--orange); }
+  .file-tree .indent { display: inline-block; }
+  .file-tree .line-count {
+    float: right;
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  /* Team presets */
+  .presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .preset {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.2s;
+  }
+  .preset:hover {
+    border-color: var(--purple);
+    transform: translateY(-1px);
+  }
+  .preset .preset-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+  .preset .preset-desc {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+  .preset .preset-flow {
+    font-size: 0.72rem;
+    font-family: monospace;
+    color: var(--cyan);
+    background: rgba(57, 210, 192, 0.06);
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  /* Quality gates */
+  .gates {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .gate {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s;
+  }
+  .gate:hover { border-color: var(--green); }
+  .gate .gate-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .gate .gate-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .gate .gate-desc {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  /* Slash commands */
+  .commands {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .cmd {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    transition: all 0.2s;
+  }
+  .cmd:hover { border-color: var(--accent); }
+  .cmd .cmd-name {
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+  .cmd .cmd-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* Stats bar */
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Tooltip */
+  .tip {
+    position: relative;
+  }
+  .tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+  .tip:hover::after { opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .agents-grid { grid-template-columns: repeat(3, 1fr); }
+    .modules-grid { grid-template-columns: 1fr; }
+    .presets { grid-template-columns: 1fr; }
+    .gates { flex-direction: column; }
+    .commands { flex-direction: column; }
+    .pipeline { flex-wrap: wrap; justify-content: center; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    .agents-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Animate in */
+  .card { animation: fadeUp 0.4s ease-out both; }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.3s; }
+  .card:nth-child(7) { animation-delay: 0.35s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>cc_agents</span> Architecture<span class="version">v4.2</span></h1>
+  <p>Agent definitions for Claude Code multi-agent orchestration &mdash; lean, focused, trust Claude's native capabilities</p>
+  <p style="margin-top: 0.4rem;"><a href="https://github.com/jonzo97/cc_agents" style="color: var(--accent); text-decoration: none; font-size: 0.85rem;" target="_blank">github.com/jonzo97/cc_agents</a></p>
+</div>
+
+<div class="grid">
+
+  <!-- Stats -->
+  <div class="card full-width">
+    <div class="stats">
+      <div class="stat"><div class="stat-value">5</div><div class="stat-label">Agents</div></div>
+      <div class="stat"><div class="stat-value">3</div><div class="stat-label">Serena Variants</div></div>
+      <div class="stat"><div class="stat-value">3</div><div class="stat-label">Team Presets</div></div>
+      <div class="stat"><div class="stat-value">3</div><div class="stat-label">Quality Gates</div></div>
+      <div class="stat"><div class="stat-value">2</div><div class="stat-label">Commands</div></div>
+      <div class="stat"><div class="stat-value">4</div><div class="stat-label">Phases</div></div>
+    </div>
+  </div>
+
+  <!-- Agents -->
+  <div class="card full-width">
+    <h2><span class="icon">&#x1F916;</span> Agents</h2>
+    <div class="agents-grid">
+      <div class="agent tip" data-tip="Explores codebase structure and patterns">
+        <div class="serena-badge">+ Serena</div>
+        <div class="emoji">&#x1F50D;</div>
+        <div class="name">Scout</div>
+        <div class="model model-haiku">haiku</div>
+        <div class="desc">Codebase exploration &amp; architecture discovery</div>
+      </div>
+      <div class="agent tip" data-tip="Deep technical research with citations">
+        <div class="emoji">&#x1F4DA;</div>
+        <div class="name">Research</div>
+        <div class="model model-sonnet">sonnet</div>
+        <div class="desc">Technical research, source hierarchy, scoped investigation</div>
+      </div>
+      <div class="agent tip" data-tip="Strategic planning and task decomposition">
+        <div class="emoji">&#x1F4CB;</div>
+        <div class="name">Planner</div>
+        <div class="model model-opus">opus</div>
+        <div class="desc">Task decomposition, risk assessment, SMART tasks</div>
+      </div>
+      <div class="agent tip" data-tip="TDD workflow with error recovery">
+        <div class="serena-badge">+ Serena</div>
+        <div class="emoji">&#x1F528;</div>
+        <div class="name">Builder</div>
+        <div class="model model-sonnet">sonnet</div>
+        <div class="desc">Implementation, TDD, error recovery, checkpointing</div>
+      </div>
+      <div class="agent tip" data-tip="Validates against plan acceptance criteria">
+        <div class="serena-badge">+ Serena</div>
+        <div class="emoji">&#x2705;</div>
+        <div class="name">Reviewer</div>
+        <div class="model model-haiku">haiku</div>
+        <div class="desc">Code review, quality checks, acceptance criteria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Flow -->
+  <div class="card full-width">
+    <h2><span class="icon">&#x26A1;</span> Full Pipeline Flow</h2>
+    <div class="pipeline">
+      <div class="phase">
+        <div class="phase-num">Phase 0</div>
+        <div class="phase-name">Pre-Flight</div>
+        <div class="phase-agents">Orchestrator</div>
+        <div class="phase-time">~1 min</div>
+      </div>
+      <div class="arrow">&#x2192;</div>
+      <div class="phase">
+        <div class="phase-num">Phase 1</div>
+        <div class="phase-name">Discovery</div>
+        <div class="phase-agents">Scout + Research</div>
+        <div class="phase-time">~3-5 min (parallel)</div>
+      </div>
+      <div class="arrow">&#x2192;</div>
+      <div class="phase">
+        <div class="phase-num">Phase 2</div>
+        <div class="phase-name">Planning</div>
+        <div class="phase-agents">Planner</div>
+        <div class="phase-time">~5 min</div>
+      </div>
+      <div class="arrow">&#x2192;</div>
+      <div class="checkpoint">
+        <div class="dot"></div>
+        <div class="label">Approval</div>
+      </div>
+      <div class="arrow">&#x2192;</div>
+      <div class="phase">
+        <div class="phase-num">Phase 3</div>
+        <div class="phase-name">Build</div>
+        <div class="phase-agents">Builder &times;1-N</div>
+        <div class="phase-time">~10-30 min</div>
+      </div>
+      <div class="arrow">&#x2192;</div>
+      <div class="phase">
+        <div class="phase-num">Phase 4</div>
+        <div class="phase-name">Review</div>
+        <div class="phase-agents">Reviewer</div>
+        <div class="phase-time">~3 min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- v4.2 Modules -->
+  <div class="card full-width">
+    <h2><span class="icon">&#x2728;</span> v4.2 — Smarter Orchestration</h2>
+    <div class="modules-grid">
+      <div class="module">
+        <div class="tag tag-f">MODULE F</div>
+        <div class="mod-title">Toolbox</div>
+        <div class="mod-desc">Reference catalog of tools that unlock autonomous operation. Top 8 ranked by impact. Project-type bundles.</div>
+        <div class="mod-files"><code>docs/tool-catalog.md</code> <code>orchestrator-guide.md</code></div>
+      </div>
+      <div class="module">
+        <div class="tag tag-g">MODULE G</div>
+        <div class="mod-title">Pre-Flight Protocol</div>
+        <div class="mod-desc">Scout-then-ask. 3-question limit. Structured options. Three interruption tiers for calibrated autonomy.</div>
+        <div class="mod-files"><code>orchestrator-guide.md</code> <code>commands/pipeline.md</code></div>
+      </div>
+      <div class="module">
+        <div class="tag tag-h">MODULE H</div>
+        <div class="mod-title">Research Flagging</div>
+        <div class="mod-desc">Detects when research is needed. Domain complexity signals. Research-to-task constraint pipeline.</div>
+        <div class="mod-files"><code>orchestrator-guide.md</code> <code>planner.md</code> <code>full-pipeline.md</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Presets -->
+  <div class="card">
+    <h2><span class="icon">&#x1F465;</span> Team Presets</h2>
+    <div class="presets" style="grid-template-columns: 1fr;">
+      <div class="preset">
+        <div class="preset-name">Full Pipeline</div>
+        <div class="preset-desc">The maximalist approach. All 5 agents, 4 phases.</div>
+        <div class="preset-flow">Scout + Research &#x2192; Plan &#x2192; Build &#x2192; Review</div>
+      </div>
+      <div class="preset">
+        <div class="preset-name">Build-Review Loop</div>
+        <div class="preset-desc">Core quality pattern. Build, review, fix until PASS.</div>
+        <div class="preset-flow">Build &#x21C4; Review (max 3 cycles)</div>
+      </div>
+      <div class="preset">
+        <div class="preset-name">Parallel Research</div>
+        <div class="preset-desc">Discovery-heavy. Multiple scouts and researchers in parallel.</div>
+        <div class="preset-flow">Scout&times;N + Research&times;N &#x2192; Plan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Structure -->
+  <div class="card">
+    <h2><span class="icon">&#x1F4C1;</span> Project Structure</h2>
+    <div class="file-tree">
+      <div><span class="dir">agents/</span><span class="line-count">5 agents</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">builder.md</span><span class="line-count">99 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">planner.md</span><span class="line-count">118 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">research.md</span><span class="line-count">84 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">reviewer.md</span><span class="line-count">81 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">scout.md</span><span class="line-count">84 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="dir">serena/</span><span class="line-count">3 overrides</span></div>
+      <div><span class="dir">teams/</span><span class="line-count">3 presets</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">build-review-loop.md</span><span class="line-count">91 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">full-pipeline.md</span><span class="line-count">155 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">parallel-research.md</span><span class="line-count">66 L</span></div>
+      <div><span class="dir">commands/</span><span class="line-count">2 commands</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">pipeline.md</span><span class="line-count">126 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">team-status.md</span><span class="line-count">48 L</span></div>
+      <div><span class="dir">docs/</span><span class="line-count">5 docs</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">orchestrator-guide.md</span><span class="line-count">195 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="new file">tool-catalog.md</span><span class="line-count">115 L</span></div>
+      <div><span class="dir">hooks/</span><span class="line-count">3 gates</span></div>
+      <div><span class="dir">ralph/</span><span class="line-count">CLI helper</span></div>
+      <div><span class="file">deploy.sh</span></div>
+      <div><span class="file">init.sh</span></div>
+    </div>
+    <div style="margin-top: 0.8rem; font-size: 0.7rem; color: var(--text-dim);">
+      <span style="color: var(--green);">&#x25CF;</span> new &nbsp;
+      <span style="color: var(--orange);">&#x25CF;</span> changed in v4.2
+    </div>
+  </div>
+
+  <!-- Quality Gates -->
+  <div class="card">
+    <h2><span class="icon">&#x1F6E1;</span> Quality Gates (Hooks)</h2>
+    <div class="gates" style="flex-direction: column;">
+      <div class="gate">
+        <div class="gate-icon">&#x1F9F9;</div>
+        <div>
+          <div class="gate-name">Lint Gate</div>
+          <div class="gate-desc">Static analysis — runs before builder completes</div>
+        </div>
+      </div>
+      <div class="gate">
+        <div class="gate-icon">&#x1F9EA;</div>
+        <div>
+          <div class="gate-name">Test Gate</div>
+          <div class="gate-desc">Test suite pass — validates builder output</div>
+        </div>
+      </div>
+      <div class="gate">
+        <div class="gate-icon">&#x1F50E;</div>
+        <div>
+          <div class="gate-name">Review Gate</div>
+          <div class="gate-desc">Automated review — checks against acceptance criteria</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slash Commands -->
+  <div class="card">
+    <h2><span class="icon">&#x2318;</span> Slash Commands</h2>
+    <div class="commands" style="flex-direction: column;">
+      <div class="cmd">
+        <div class="cmd-name">/pipeline &lt;task&gt;</div>
+        <div class="cmd-desc">Full agent pipeline: pre-flight &rarr; scout &rarr; research &rarr; plan &rarr; build &rarr; review</div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-name">/team-status</div>
+        <div class="cmd-desc">Show current team progress summary</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orchestrator Guide Key Behaviors -->
+  <div class="card full-width">
+    <h2><span class="icon">&#x1F9E0;</span> Orchestrator Key Behaviors (v4.2)</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+      <div>
+        <h3 style="font-size: 0.85rem; color: var(--green); margin-bottom: 0.5rem;">Pre-Flight Protocol</h3>
+        <ul style="font-size: 0.78rem; color: var(--text-dim); padding-left: 1.2rem; line-height: 1.7;">
+          <li>Scout code before asking questions</li>
+          <li>Max 2-3 targeted questions</li>
+          <li>Structured options, not open Q's</li>
+          <li>Three interruption tiers</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem;">Tool Suggestions</h3>
+        <ul style="font-size: 0.78rem; color: var(--text-dim); padding-left: 1.2rem; line-height: 1.7;">
+          <li>Identify project type automatically</li>
+          <li>Suggest tools that unlock autonomy</li>
+          <li>Playwright #1 for web projects</li>
+          <li>Match suggestions to task scope</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size: 0.85rem; color: var(--orange); margin-bottom: 0.5rem;">Research Flagging</h3>
+        <ul style="font-size: 0.78rem; color: var(--text-dim); padding-left: 1.2rem; line-height: 1.7;">
+          <li>Research default-on, not opt-in</li>
+          <li>Domain complexity decision tree</li>
+          <li>Constraints flow to builder tasks</li>
+          <li>5-min research saves 50min debugging</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align: center; margin-top: 2rem; color: var(--text-dim); font-size: 0.75rem;">
+  cc_agents v4.2 &mdash; Smarter Orchestration &mdash; deploy with <code style="color: var(--accent);">./deploy.sh</code>
+</div>
+
+</body>
+</html>

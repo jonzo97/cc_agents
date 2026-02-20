@@ -43,16 +43,30 @@ Each task must be:
 
 When research findings exist, **synthesize them into task-level constraints.** Don't just reference the research report — extract the specific gotchas and attach them to each task.
 
-Example:
+**This is non-negotiable.** If research findings exist and you don't attach constraints to tasks, you are doing it wrong. Builders implement what's in the task description. If domain constraints aren't in the task, builders won't know about them and will produce buggy code that costs 10x more to fix than the research took.
+
+### What Good Transfer Looks Like
+
+Every TaskCreate call should include a `Constraints (from research):` block when research findings are available. Extract:
+- **Hard constraints** — values, limits, thresholds that must be respected
+- **Library-specific gotchas** — version requirements, deprecated APIs, known bugs
+- **Patterns to follow** — recommended approaches from research, with rationale
+- **Anti-patterns to avoid** — approaches that seem obvious but fail (and why)
+
+### Example
+
 ```
 Task: "Build Card 7: Reaction-Diffusion simulation"
 Constraints (from research):
 - Gray-Scott stability: dt < h²/(2*d*dim). With h=1, d=0.5, dim=2: dt must be < 0.25
 - Use known-good params: f=0.055, k=0.062, dA=0.2097, dB=0.105
 - Clamp concentrations to [0, 1] after each step
+- Anti-pattern: don't use Euler forward — use Gray-Scott specific update rule
 ```
 
-Builders implement what's in the task. If domain constraints aren't in the task, they won't know about them.
+### Self-Check
+
+Before finalizing your plan, verify: **for every task that touches a domain covered by research, are the relevant constraints embedded in the task description?** If not, go back and add them.
 
 ## Output Format
 
