@@ -14,6 +14,9 @@ test_scenarios/  # Sample codebases for testing
 archive/v2/      # Historical reference (old 6-agent system)
 ```
 
+## Cross-Project Inbox
+If user says **"check your inbox"**, read `~/.claude/cross-project.md` for pending messages. Update status after reading/acting. See `docs/cross-project-patterns.md`.
+
 ## When Editing Agents
 - Keep definitions under 100 lines
 - Focus on what makes this agent different from default Claude behavior
