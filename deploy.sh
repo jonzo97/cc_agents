@@ -3,11 +3,10 @@
 #
 # Usage:
 #   ./deploy.sh                # Deploy base agents
-#   ./deploy.sh --serena       # Deploy Serena-enhanced variants (scout, builder, reviewer)
 #   ./deploy.sh --teams        # Deploy team workflow presets
 #   ./deploy.sh --hooks        # Deploy quality gate hooks
 #   ./deploy.sh --commands     # Deploy slash commands (pipeline, team-status)
-#   ./deploy.sh --all          # Deploy everything (agents + serena + teams + hooks + commands)
+#   ./deploy.sh --all          # Deploy everything (agents + teams + hooks + commands)
 #   ./deploy.sh --clean        # Remove agents from target not in source
 #   ./deploy.sh --dry-run      # Preview without changes
 
@@ -15,7 +14,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENTS_SRC="$SCRIPT_DIR/agents"
-SERENA_SRC="$SCRIPT_DIR/agents/serena"
 TEAMS_SRC="$SCRIPT_DIR/teams"
 HOOKS_SRC="$SCRIPT_DIR/hooks"
 COMMANDS_SRC="$SCRIPT_DIR/commands"
@@ -26,7 +24,6 @@ COMMANDS_DST="$HOME/.claude/commands"
 
 DRY_RUN=false
 CLEAN=false
-SERENA=false
 TEAMS=false
 HOOKS=false
 COMMANDS=false
@@ -35,11 +32,10 @@ for arg in "$@"; do
     case "$arg" in
         --dry-run)   DRY_RUN=true ;;
         --clean)     CLEAN=true ;;
-        --serena)    SERENA=true ;;
         --teams)     TEAMS=true ;;
         --hooks)     HOOKS=true ;;
         --commands)  COMMANDS=true ;;
-        --all)       SERENA=true; TEAMS=true; HOOKS=true; COMMANDS=true ;;
+        --all)       TEAMS=true; HOOKS=true; COMMANDS=true ;;
         *)           echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
@@ -48,7 +44,6 @@ done
 
 echo "=== cc_agents deploy ==="
 echo "Source: $AGENTS_SRC"
-[ "$SERENA" = true ]   && echo "Serena:   $SERENA_SRC (overrides for scout, builder, reviewer)"
 [ "$TEAMS" = true ]    && echo "Teams:    $TEAMS_SRC → $TEAMS_DST"
 [ "$HOOKS" = true ]    && echo "Hooks:    $HOOKS_SRC → $HOOKS_DST"
 [ "$COMMANDS" = true ] && echo "Commands: $COMMANDS_SRC → $COMMANDS_DST"
@@ -81,23 +76,6 @@ for agent_file in "$AGENTS_SRC"/*.md; do
         echo "  Deployed: $agent_name ($lines lines)"
     fi
 done
-
-# Deploy Serena variants (overwrite base versions for scout, builder, reviewer)
-if [ "$SERENA" = true ] && [ -d "$SERENA_SRC" ]; then
-    echo ""
-    echo "--- Serena variants (overriding base) ---"
-    for agent_file in "$SERENA_SRC"/*.md; do
-        agent_name=$(basename "$agent_file")
-        lines=$(wc -l < "$agent_file")
-
-        if [ "$DRY_RUN" = true ]; then
-            echo "  $agent_name ($lines lines) — Serena override"
-        else
-            cp "$agent_file" "$AGENTS_DST/$agent_name"
-            echo "  Deployed: $agent_name ($lines lines) [Serena]"
-        fi
-    done
-fi
 
 # Clean: remove stale agents
 echo ""

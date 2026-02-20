@@ -10,25 +10,9 @@ Built: `agents/tester.md`, updated `teams/build-review-loop.md` (inner loop), `t
 
 ---
 
-## 2. Serena Audit (Priority: MEDIUM)
+## 2. Serena Audit (Priority: MEDIUM) — DONE (2026-02-20)
 
-### The Problem
-Serena variants exist but may not actually be in use. Need to verify:
-- Is Serena configured and working in any active project?
-- Are the Serena variants being deployed and selected?
-- Does `deploy.sh` / `init.sh` correctly install Serena variants?
-
-### Action Items
-- [ ] Audit: check if Serena MCP is configured in any project's `.mcp.json`
-- [ ] Test: run a Serena agent against a real project, verify LSP tools work
-- [ ] Decide: keep, fix, or deprecate Serena variants based on findings
-
-### Cross-Project: Research task for second-brain
-Send second-brain a mailbox message requesting a Serena deep dive for NotebookLM podcast:
-- What Serena actually is (LSP wrapper as MCP server)
-- How it compares to native Claude Code tools
-- Setup requirements and pain points
-- Whether it's worth the complexity for this use case
+Audited: zero projects have Serena in `.mcp.json`. Deprecated: variants moved to `archive/serena-variants/`, `--serena` flag removed from `deploy.sh`, Serena references stripped from team presets. Deep research prompt written at `research/prompts/11_serena-lsp-ai-coding.md`. Mailbox note to SB already sent (previous session).
 
 ---
 

@@ -150,7 +150,6 @@ Each phase transition is a natural checkpoint:
 - **Plan approval is the key checkpoint.** Always review the plan before Phase 3.
 - For smaller features, skip Phase 1 (if you know the codebase) or skip Research (if the approach is clear).
 - The `/pipeline` command automates this entire flow.
-- For Serena projects, the builder and reviewer automatically use LSP-powered editing/review.
 
 ## Cost Estimate
 
