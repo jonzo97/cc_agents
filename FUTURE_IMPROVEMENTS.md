@@ -1,6 +1,6 @@
 # Future Improvements — Brainstorming
 
-Ideas for improving cc_agents, informed by deep research (Feb 2026). See `docs/RESEARCH_SYNTHESIS.md` for full findings.
+Ideas for improving cc_agents, informed by deep research (Feb 2026). See `archive/research/RESEARCH_SYNTHESIS.md` for full findings.
 
 ## High Priority — Implement Next
 
@@ -86,7 +86,7 @@ Currently unnecessary (<20 tools) but future-proofed.
 - **Tool Search Tool** (`defer_loading`) — 85% token savings for 20-100 tools
 - **Code Execution with MCP** — 98.7% savings for 100+ tools, requires sandboxing
 - **Tool Use Examples** — 72%->90% accuracy for complex parameter handling
-- **See:** [docs/PROGRESSIVE_TOOL_DISCOVERY.md](docs/PROGRESSIVE_TOOL_DISCOVERY.md)
+- **See:** [archive/research/PROGRESSIVE_TOOL_DISCOVERY.md](archive/research/PROGRESSIVE_TOOL_DISCOVERY.md)
 
 ### Trust & Verification (from Claude Flow proposals)
 - **Trust scoring per agent** — Track success/failure rates, adjust autonomy based on performance

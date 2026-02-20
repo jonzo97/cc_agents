@@ -272,6 +272,74 @@
     font-size: 0.65rem;
   }
 
+  /* Recipes */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .recipe {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    transition: all 0.2s;
+  }
+  .recipe:hover {
+    border-color: var(--cyan);
+    transform: translateY(-1px);
+  }
+  .recipe .recipe-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+    font-family: monospace;
+    color: var(--cyan);
+  }
+  .recipe .recipe-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .recipe .recipe-replaces {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+    opacity: 0.7;
+  }
+
+  /* Tiers */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .tier {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .tier:hover { border-color: var(--accent); }
+  .tier .tier-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+  }
+  .tier .tier-cost {
+    font-size: 0.7rem;
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .tier .tier-desc {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
   /* File tree */
   .file-tree {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -434,6 +502,8 @@
     .grid { grid-template-columns: 1fr; }
     .agents-grid { grid-template-columns: repeat(3, 1fr); }
     .modules-grid { grid-template-columns: 1fr; }
+    .recipes-grid { grid-template-columns: 1fr; }
+    .tiers { grid-template-columns: 1fr; }
     .presets { grid-template-columns: 1fr; }
     .gates { flex-direction: column; }
     .commands { flex-direction: column; }
@@ -453,6 +523,10 @@
   .card:nth-child(5) { animation-delay: 0.25s; }
   .card:nth-child(6) { animation-delay: 0.3s; }
   .card:nth-child(7) { animation-delay: 0.35s; }
+  .card:nth-child(8) { animation-delay: 0.4s; }
+  .card:nth-child(9) { animation-delay: 0.45s; }
+  .card:nth-child(10) { animation-delay: 0.5s; }
+  .card:nth-child(11) { animation-delay: 0.55s; }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -475,9 +549,9 @@
       <div class="stat"><div class="stat-value">5</div><div class="stat-label">Agents</div></div>
       <div class="stat"><div class="stat-value">3</div><div class="stat-label">Serena Variants</div></div>
       <div class="stat"><div class="stat-value">3</div><div class="stat-label">Team Presets</div></div>
+      <div class="stat"><div class="stat-value">5</div><div class="stat-label">Recipes</div></div>
       <div class="stat"><div class="stat-value">3</div><div class="stat-label">Quality Gates</div></div>
-      <div class="stat"><div class="stat-value">2</div><div class="stat-label">Commands</div></div>
-      <div class="stat"><div class="stat-value">4</div><div class="stat-label">Phases</div></div>
+      <div class="stat"><div class="stat-value">5</div><div class="stat-label">Docs</div></div>
     </div>
   </div>
 
@@ -569,25 +643,79 @@
 
   <!-- v4.2 Modules -->
   <div class="card full-width">
-    <h2><span class="icon">&#x2728;</span> v4.2 — Smarter Orchestration</h2>
+    <h2><span class="icon">&#x2728;</span> Smarter Orchestration</h2>
     <div class="modules-grid">
       <div class="module">
-        <div class="tag tag-f">MODULE F</div>
-        <div class="mod-title">Toolbox</div>
+        <div class="tag tag-f">TOOLBOX</div>
+        <div class="mod-title">Tool Catalog</div>
         <div class="mod-desc">Reference catalog of tools that unlock autonomous operation. Top 8 ranked by impact. Project-type bundles.</div>
-        <div class="mod-files"><code>docs/tool-catalog.md</code> <code>orchestrator-guide.md</code></div>
+        <div class="mod-files"><code>docs/tool-catalog.md</code></div>
       </div>
       <div class="module">
-        <div class="tag tag-g">MODULE G</div>
-        <div class="mod-title">Pre-Flight Protocol</div>
+        <div class="tag tag-g">PRE-FLIGHT</div>
+        <div class="mod-title">Question Protocol</div>
         <div class="mod-desc">Scout-then-ask. 3-question limit. Structured options. Three interruption tiers for calibrated autonomy.</div>
-        <div class="mod-files"><code>orchestrator-guide.md</code> <code>commands/pipeline.md</code></div>
+        <div class="mod-files"><code>docs/orchestrator-guide.md</code></div>
       </div>
       <div class="module">
-        <div class="tag tag-h">MODULE H</div>
-        <div class="mod-title">Research Flagging</div>
+        <div class="tag tag-h">RESEARCH</div>
+        <div class="mod-title">Flagging &amp; Routing</div>
         <div class="mod-desc">Detects when research is needed. Domain complexity signals. Research-to-task constraint pipeline.</div>
-        <div class="mod-files"><code>orchestrator-guide.md</code> <code>planner.md</code> <code>full-pipeline.md</code></div>
+        <div class="mod-files"><code>docs/orchestrator-guide.md</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recipes -->
+  <div class="card full-width">
+    <h2><span class="icon">&#x1F4E6;</span> Recipes &mdash; Direct Code, No MCP</h2>
+    <div class="recipes-grid">
+      <div class="recipe">
+        <div class="recipe-name">playwright</div>
+        <div class="recipe-desc">Browser automation, screenshots, form testing, visual verification</div>
+        <div class="recipe-replaces">Replaces @playwright/mcp</div>
+      </div>
+      <div class="recipe">
+        <div class="recipe-name">chromadb</div>
+        <div class="recipe-desc">Vector DB for RAG &mdash; create, search, filter, bulk ingest</div>
+        <div class="recipe-replaces">Replaces ChromaDB MCP server</div>
+      </div>
+      <div class="recipe">
+        <div class="recipe-name">jq-python</div>
+        <div class="recipe-desc">JSON processing with Python stdlib &mdash; parse, filter, validate, diff</div>
+        <div class="recipe-replaces">Replaces jq CLI / JSON MCP</div>
+      </div>
+      <div class="recipe">
+        <div class="recipe-name">httpie-curl</div>
+        <div class="recipe-desc">HTTP requests with validation &mdash; GET, POST, auth, smoke tests</div>
+        <div class="recipe-replaces">Replaces HTTP/REST MCP servers</div>
+      </div>
+      <div class="recipe">
+        <div class="recipe-name">sqlite</div>
+        <div class="recipe-desc">Local database &mdash; query, inspect schema, summarize, create tables</div>
+        <div class="recipe-replaces">Replaces SQLite MCP server</div>
+      </div>
+      <div class="recipe" style="border-style: dashed; opacity: 0.6;">
+        <div class="recipe-name">+ more</div>
+        <div class="recipe-desc">Docker Compose, lighthouse, npm/pip audit, act &mdash; coming soon</div>
+        <div class="recipe-replaces">See recipes/_PATTERN.md</div>
+      </div>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier-name">Direct Recipe</div>
+        <div class="tier-cost">~0 tokens</div>
+        <div class="tier-desc">&lt;20 tools, simple ops</div>
+      </div>
+      <div class="tier">
+        <div class="tier-name">Code via MCP</div>
+        <div class="tier-cost">~500 tokens/tool</div>
+        <div class="tier-desc">Complex stateful ops</div>
+      </div>
+      <div class="tier">
+        <div class="tier-name">Full MCP Server</div>
+        <div class="tier-cost">7-17K tokens</div>
+        <div class="tier-desc">20+ tools, shared</div>
       </div>
     </div>
   </div>
@@ -619,57 +747,68 @@
     <h2><span class="icon">&#x1F4C1;</span> Project Structure</h2>
     <div class="file-tree">
       <div><span class="dir">agents/</span><span class="line-count">5 agents</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">builder.md</span><span class="line-count">99 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">planner.md</span><span class="line-count">118 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">research.md</span><span class="line-count">84 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">reviewer.md</span><span class="line-count">81 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">scout.md</span><span class="line-count">84 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">scout, research, planner, builder, reviewer</span></div>
       <div><span class="indent">&nbsp;&nbsp;</span><span class="dir">serena/</span><span class="line-count">3 overrides</span></div>
       <div><span class="dir">teams/</span><span class="line-count">3 presets</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">build-review-loop.md</span><span class="line-count">91 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">full-pipeline.md</span><span class="line-count">155 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">parallel-research.md</span><span class="line-count">66 L</span></div>
       <div><span class="dir">commands/</span><span class="line-count">2 commands</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">pipeline.md</span><span class="line-count">126 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">team-status.md</span><span class="line-count">48 L</span></div>
       <div><span class="dir">docs/</span><span class="line-count">5 docs</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="changed file">orchestrator-guide.md</span><span class="line-count">195 L</span></div>
-      <div><span class="indent">&nbsp;&nbsp;</span><span class="new file">tool-catalog.md</span><span class="line-count">115 L</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">orchestrator-guide, tool-catalog</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="file">cross-project-patterns, deep-research-workflow</span></div>
+      <div><span class="new dir">recipes/</span><span class="line-count">5 recipes</span></div>
+      <div><span class="indent">&nbsp;&nbsp;</span><span class="new file">playwright, chromadb, jq-python, httpie-curl, sqlite</span></div>
+      <div><span class="dir">research/</span><span class="line-count">prompts</span></div>
       <div><span class="dir">hooks/</span><span class="line-count">3 gates</span></div>
       <div><span class="dir">ralph/</span><span class="line-count">CLI helper</span></div>
-      <div><span class="file">deploy.sh</span></div>
-      <div><span class="file">init.sh</span></div>
+      <div><span class="file">deploy.sh, init.sh</span></div>
     </div>
     <div style="margin-top: 0.8rem; font-size: 0.7rem; color: var(--text-dim);">
-      <span style="color: var(--green);">&#x25CF;</span> new &nbsp;
-      <span style="color: var(--orange);">&#x25CF;</span> changed in v4.2
+      <span style="color: var(--green);">&#x25CF;</span> new in v4.2
     </div>
   </div>
 
   <!-- Quality Gates -->
   <div class="card">
-    <h2><span class="icon">&#x1F6E1;</span> Quality Gates (Hooks)</h2>
+    <h2><span class="icon">&#x1F6E1;</span> Quality Gates</h2>
     <div class="gates" style="flex-direction: column;">
       <div class="gate">
         <div class="gate-icon">&#x1F9F9;</div>
         <div>
           <div class="gate-name">Lint Gate</div>
-          <div class="gate-desc">Static analysis — runs before builder completes</div>
+          <div class="gate-desc">Static analysis &mdash; runs before builder completes</div>
         </div>
       </div>
       <div class="gate">
         <div class="gate-icon">&#x1F9EA;</div>
         <div>
           <div class="gate-name">Test Gate</div>
-          <div class="gate-desc">Test suite pass — validates builder output</div>
+          <div class="gate-desc">Test suite pass &mdash; validates builder output</div>
         </div>
       </div>
       <div class="gate">
         <div class="gate-icon">&#x1F50E;</div>
         <div>
           <div class="gate-name">Review Gate</div>
-          <div class="gate-desc">Automated review — checks against acceptance criteria</div>
+          <div class="gate-desc">Automated review &mdash; checks against acceptance criteria</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross-Project + Research -->
+  <div class="card">
+    <h2><span class="icon">&#x1F4EC;</span> Cross-Project Patterns</h2>
+    <div style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.7;">
+      <div style="margin-bottom: 0.8rem;">
+        <div style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Shared Mailbox</div>
+        <div>Message board between Claude Code instances. SessionStart hook auto-checks for pending messages.</div>
+      </div>
+      <div style="margin-bottom: 0.8rem;">
+        <div style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Peek Pattern</div>
+        <div>Read-only access to sibling project files on demand.</div>
+      </div>
+      <div>
+        <div style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Deep Research Workflow</div>
+        <div>Prompt &rarr; Ingest &rarr; Squeeze &rarr; Triage &rarr; PRD &rarr; Execute &rarr; Archive</div>
       </div>
     </div>
   </div>
@@ -689,9 +828,9 @@
     </div>
   </div>
 
-  <!-- Orchestrator Guide Key Behaviors -->
+  <!-- Orchestrator Key Behaviors -->
   <div class="card full-width">
-    <h2><span class="icon">&#x1F9E0;</span> Orchestrator Key Behaviors (v4.2)</h2>
+    <h2><span class="icon">&#x1F9E0;</span> Orchestrator Key Behaviors</h2>
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
       <div>
         <h3 style="font-size: 0.85rem; color: var(--green); margin-bottom: 0.5rem;">Pre-Flight Protocol</h3>
@@ -726,7 +865,7 @@
 </div>
 
 <div style="text-align: center; margin-top: 2rem; color: var(--text-dim); font-size: 0.75rem;">
-  cc_agents v4.2 &mdash; Smarter Orchestration &mdash; deploy with <code style="color: var(--accent);">./deploy.sh</code>
+  cc_agents v4.2 &mdash; <a href="https://github.com/jonzo97/cc_agents" style="color: var(--accent); text-decoration: none;" target="_blank">GitHub</a> &mdash; deploy with <code style="color: var(--accent);">./deploy.sh</code>
 </div>
 
 </body>

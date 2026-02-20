@@ -56,6 +56,10 @@ tmp/
 temp/
 *.tmp
 
+# Claude Code session data
+.claude/
+.claude_sessions/
+
 # Archive (keeping for reference but not committing all)
 # Uncomment if you want to exclude archive completely
 # archive/

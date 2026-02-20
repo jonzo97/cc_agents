@@ -87,7 +87,6 @@ Check `FUTURE_IMPROVEMENTS.md` for the current improvement backlog. Key next ste
 
 ## Important Notes
 
-- **Security:** Never access `~/mchp_cli_test` — restricted directory.
 - **User's global CLAUDE.md** at `~/.claude/CLAUDE.md` has extensive instructions. Read it.
 - **The user prefers action over ceremony.** Research -> decide -> implement.
 - **Old system reference:** `archive/v2/` has lessons learned (KNOWN_LIMITATIONS.md, FEEDBACK_HISTORY.md).

@@ -22,6 +22,3 @@ If user says **"check your inbox"**, read `~/.claude/cross-project.md` for pendi
 - Focus on what makes this agent different from default Claude behavior
 - Don't duplicate Claude's built-in capabilities (tool selection, error handling, etc.)
 - Test with real tasks before deploying
-
-## Security
-Do NOT access `~/mchp_cli_test` — restricted directory.

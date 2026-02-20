@@ -1,6 +1,6 @@
 # cc_agents — Claude Code Multi-Agent Orchestration
 
-Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Five specialized agents, three team presets, quality gate hooks, and an orchestrator guide — all designed for Opus 4.6's native orchestration capabilities.
+Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Five specialized agents, three team presets, quality gate hooks, direct-code recipes, and an orchestrator guide — all designed for Opus 4.6's native orchestration capabilities.
 
 **[View the Architecture Dashboard](docs/dashboard.html)**
 
@@ -10,7 +10,8 @@ Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/clau
 2. **Trust the model.** Opus 4.6 handles orchestration, tool selection, and error recovery natively. Agents add focused guidance, not capability.
 3. **Tool-agnostic base.** Base agents work with standard Claude Code tools. Serena-enhanced variants available for LSP-enabled projects.
 4. **Research by default.** Domain research is opt-out, not opt-in. A 5-minute research phase costs ~10K tokens; debugging domain gaps costs 10-50x that.
-5. **Test before deploy.** `init.sh` installs into a project for testing. Only promote to globals when proven.
+5. **Recipes over MCP.** For <20 tools, skip MCP servers entirely. Direct Python/Bash recipes at zero context cost.
+6. **Test before deploy.** `init.sh` installs into a project for testing. Only promote to globals when proven.
 
 ## Agents
 
@@ -35,7 +36,7 @@ Pre-Flight → Discovery → Planning → Build → Review
                   (parallel)                   (1-8 parallel)
 ```
 
-**Pre-Flight (v4.2):** Before spawning agents, the orchestrator scouts the codebase, suggests tools that unlock autonomous operation, asks 2-3 targeted questions, and flags research needs.
+**Pre-Flight:** Before spawning agents, the orchestrator scouts the codebase, suggests tools that unlock autonomous operation, asks 2-3 targeted questions, and flags research needs.
 
 **Proven scale:** 8 parallel builders produced ~5,800 lines in ~8 minutes with zero merge conflicts.
 
@@ -49,17 +50,29 @@ Run it with `/pipeline <task>` or configure manually with team presets.
 | **Build-Review Loop** | Builder + Reviewer | Implementation with quality gates — build, review, fix until PASS |
 | **Parallel Research** | Scout×N + Research×N → Planner | Discovery-heavy tasks needing multiple perspectives |
 
-## Quality Gates
+## Recipes — Direct Code, No MCP
 
-Shell hooks that enforce quality during agent runs:
+For tools with fewer than 20 functions, skip MCP servers entirely. Agents read a recipe (~50 lines), write code, and run it via Bash. Zero tool-definition overhead.
 
-| Hook | Runs | Purpose |
-|------|------|---------|
-| `lint-gate.sh` | Before builder completes | Static analysis |
-| `test-gate.sh` | After builder completes | Test suite validation |
-| `review-gate.sh` | During review phase | Acceptance criteria check |
+| Recipe | What It Replaces |
+|--------|-----------------|
+| **playwright** | @playwright/mcp server |
+| **chromadb** | ChromaDB MCP server |
+| **jq-python** | jq CLI or JSON MCP tools |
+| **httpie-curl** | HTTP/REST MCP servers |
+| **sqlite** | SQLite MCP server |
 
-## v4.2 — Smarter Orchestration
+Each recipe includes install commands, common patterns, and gotchas. See `recipes/_PATTERN.md` for the template.
+
+**When to use what:**
+
+| Approach | Context Cost | Best For |
+|----------|-------------|----------|
+| Direct Python recipe | ~0 tokens (read on demand) | <20 tools, simple operations |
+| Code execution via MCP | ~500 tokens/tool | Complex stateful operations |
+| Full MCP server | 7-17K tokens | 20+ tools, shared across projects |
+
+## Smarter Orchestration
 
 Three modules that make the orchestrator proactively smarter:
 
@@ -70,6 +83,39 @@ Three modules that make the orchestrator proactively smarter:
 | **Research Flagging** | Detect when research is needed | Domain complexity signals + decision tree. Research findings flow as constraints into builder tasks. |
 
 See the [Orchestrator Guide](docs/orchestrator-guide.md) for full details.
+
+## Cross-Project Communication
+
+A shared mailbox pattern for coordinating between separate Claude Code instances in different projects.
+
+- **Shared mailbox** at a known path acts as a message board between projects
+- **SessionStart hook** checks for pending messages on every session start
+- **Peek pattern** for read-only access to sibling project files
+- **Signoff protocol** tracks message status: `pending` → `read` → `completed`
+
+See [Cross-Project Patterns](docs/cross-project-patterns.md) for the full pattern.
+
+## Deep Research Workflow
+
+A structured workflow for leveraging external deep research tools (like Gemini Deep Research) and feeding results back into the agent pipeline.
+
+```
+Prompt → Ingest → Squeeze → Triage → PRD → Execute → Archive
+```
+
+Outputs route to one of four destinations: PRD for building, best practices docs, learning material, or topic files. Pre-written research prompts live in `research/prompts/`.
+
+See [Deep Research Workflow](docs/deep-research-workflow.md) for the full pipeline.
+
+## Quality Gates
+
+Shell hooks that enforce quality during agent runs:
+
+| Hook | Runs | Purpose |
+|------|------|---------|
+| `lint-gate.sh` | Before builder completes | Static analysis |
+| `test-gate.sh` | After builder completes | Test suite validation |
+| `review-gate.sh` | During review phase | Acceptance criteria check |
 
 ## Quick Start
 
@@ -105,9 +151,6 @@ cc_agents/
 │   ├── builder.md         # Implementation
 │   ├── reviewer.md        # Code review
 │   └── serena/            # LSP-enhanced variants
-│       ├── scout.md
-│       ├── builder.md
-│       └── reviewer.md
 ├── teams/                 # Team preset configurations
 │   ├── full-pipeline.md
 │   ├── build-review-loop.md
@@ -116,9 +159,20 @@ cc_agents/
 │   ├── pipeline.md        # /pipeline orchestration
 │   └── team-status.md     # /team-status monitoring
 ├── docs/                  # Reference documentation
-│   ├── orchestrator-guide.md   # How to lead agent teams
-│   ├── tool-catalog.md         # Tools for autonomous operation
-│   └── dashboard.html          # Visual architecture overview
+│   ├── orchestrator-guide.md      # How to lead agent teams
+│   ├── tool-catalog.md            # Tools for autonomous operation
+│   ├── cross-project-patterns.md  # Multi-project coordination
+│   ├── deep-research-workflow.md  # Research pipeline
+│   └── dashboard.html             # Visual architecture overview
+├── recipes/               # Direct-code tool patterns (no MCP)
+│   ├── _PATTERN.md        # Recipe template
+│   ├── playwright.md      # Browser automation
+│   ├── chromadb.md        # Vector DB / RAG
+│   ├── jq-python.md       # JSON processing
+│   ├── httpie-curl.md     # HTTP requests
+│   └── sqlite.md          # Local database
+├── research/              # Deep research prompts and outputs
+│   └── prompts/           # Pre-written research prompts
 ├── hooks/                 # Quality gate hooks
 │   ├── lint-gate.sh
 │   ├── test-gate.sh
@@ -142,11 +196,10 @@ Projects with `init.sh` applied use experimental agents. Without it, they fall b
 
 ## Version History
 
-| Version | Date | Highlights |
-|---------|------|------------|
-| **v4.2** | Feb 2026 | Smarter orchestration: toolbox, pre-flight protocol, research flagging |
-| **v4.1** | Feb 2026 | Field test feedback — domain knowledge, smoke tests, orchestrator guide |
-| **v4.5** | Feb 2026 | Team-aware agents, presets, Ralph v2, quality gates, pipeline command |
-| **v4** | Feb 2026 | Research-driven agent rewrite for Opus 4.6 |
-| **v3** | Feb 2026 | 4 agents, 193 lines, lean for Opus 4.6 |
-| **v2** | Oct 2025 | 6 agents, 5,697 lines, SQLite coordination, Serena LSP |
+| Version | Highlights |
+|---------|------------|
+| **v4.2** | Smarter orchestration, recipes, cross-project patterns, deep research workflow |
+| **v4.1** | Field test feedback — domain knowledge, smoke tests, orchestrator guide |
+| **v4** | Research-driven agent rewrite for Opus 4.6. Team-aware agents, presets, Ralph v2, quality gates, pipeline command. |
+| **v3** | 4 agents, 193 lines, lean for Opus 4.6 |
+| **v2** | 6 agents, 5,697 lines, SQLite coordination, Serena LSP |
