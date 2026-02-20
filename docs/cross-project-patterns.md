@@ -60,8 +60,25 @@ Update topics/rag.md to reference the ChromaDB recipe pattern.
 ### Lifecycle
 
 1. Source project writes a message with `status: pending`
-2. Target project reads it, acts on it, updates to `acknowledged` or `completed`
-3. Periodically clean out completed messages (or archive them)
+2. Target project reads it, acts on it, updates status to `read by [project] (YYYY-MM-DD)`
+3. Once actioned, update status to `completed by [project] (YYYY-MM-DD)`
+4. Periodically clean out completed messages (or archive them)
+
+### Inbox Hook (Automatic)
+
+A SessionStart hook at `~/.claude/tools/check_inbox.sh` runs on every session start across all projects. It:
+- Counts pending messages in `~/.claude/cross-project.md`
+- Shows message headers to the CC instance
+- Tells the agent to read the full mailbox and update statuses
+
+This means every CC instance, in any project, gets notified of pending cross-project messages the moment a session starts. No manual "check inbox" needed.
+
+**Hook config** (in `~/.claude/settings.json` → `hooks.SessionStart`):
+```json
+{
+  "hooks": [{ "type": "command", "command": "~/.claude/tools/check_inbox.sh" }]
+}
+```
 
 ## Pattern: Peek at Sibling Project
 
