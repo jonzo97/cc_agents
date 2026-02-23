@@ -33,6 +33,9 @@ Quick-reference for tools that unlock autonomous agent operation. The orchestrat
 | Python data/ML | pytest, jupyter | `pip install pytest jupyter` |
 | Full-stack (DB) | Docker Compose, Playwright, jq | `docker compose up -d` + Playwright install |
 | Infrastructure/DevOps | act, docker, jq | `brew install act jq` |
+| Web scraping (static) | BeautifulSoup, httpx | `pip install beautifulsoup4 httpx lxml` |
+| Web scraping (JS/dynamic) | crawl4ai | `pip install crawl4ai && crawl4ai-setup` |
+| Content extraction/research | trafilatura | `pip install trafilatura` |
 
 ---
 
@@ -87,6 +90,40 @@ Quick-reference for tools that unlock autonomous agent operation. The orchestrat
 - **Install:** Usually pre-installed; `brew install sqlite` if not
 - **Suggest when:** Project uses SQLite for local storage
 - **Autonomy unlock:** Query data, verify schema, inspect state — no GUI needed
+
+---
+
+## Scraping & Content Extraction
+
+Pick the right tool for the job — don't reach for Playwright when you just need text from a static page.
+
+| Scenario | Tool | Why |
+|----------|------|-----|
+| Static HTML, structured data (tables, lists) | **BeautifulSoup + httpx** | Fast, no browser, precise CSS/XPath selectors |
+| JS-rendered pages, multi-page crawls, LLM input | **crawl4ai** | Async, handles JS, outputs clean markdown |
+| Article/blog text extraction (strip boilerplate) | **trafilatura** | Purpose-built for main content extraction |
+| Visual verification, forms, screenshots | **Playwright** | Full browser — use when you need interaction or visuals |
+
+### BeautifulSoup + httpx
+- **What:** Lightweight HTML fetching and parsing — no browser needed
+- **Install:** `pip install beautifulsoup4 httpx lxml`
+- **Suggest when:** Scraping static pages, extracting tables/lists, parsing HTML APIs
+- **Autonomy unlock:** Scrape data from web pages without browser overhead — faster and simpler than Playwright for non-JS content
+- **Recipe:** `recipes/beautifulsoup.md`
+
+### crawl4ai
+- **What:** LLM-optimized web crawler with markdown output and optional JS rendering
+- **Install:** `pip install crawl4ai && crawl4ai-setup`
+- **Suggest when:** Crawling sites for LLM consumption, JS-rendered content where you need text (not screenshots), multi-page scrapes
+- **Autonomy unlock:** Converts pages to clean markdown automatically — ideal for feeding web content to Claude for analysis
+- **Recipe:** `recipes/crawl4ai.md`
+
+### trafilatura
+- **What:** Main content extraction from web pages — strips nav, ads, footers automatically
+- **Install:** `pip install trafilatura`
+- **Suggest when:** Extracting article/blog content, building research corpora, preprocessing web pages for summarization
+- **Autonomy unlock:** One function call to get clean article text — no CSS selectors, no parsing logic needed
+- **Recipe:** `recipes/trafilatura.md`
 
 ---
 
