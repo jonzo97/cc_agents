@@ -1,6 +1,6 @@
 ---
 name: research-liaison
-description: Squeeze raw research output into structured insights, route to destinations, update tracker
+description: Squeeze raw research output into structured insights, route to destinations, update tracker. Use when raw Gemini/research output needs extraction and routing.
 model: sonnet
 tools:
   - Read
@@ -71,6 +71,14 @@ When invoked cross-project (from second-brain or via mailbox):
 1. Read mailbox for context on which research to process
 2. Run full flow, send results summary back via `~/.claude/cross-project.md`
 3. If spawned as teammate, use SendMessage + TaskUpdate as usual
+
+## Halt Conditions
+
+Stop and escalate when:
+- Research output is empty, corrupted, or not in expected format
+- Routing table at `~/second-brain/topics/research-switchboard.md` is missing or malformed
+- Tracker JSON is corrupted or has conflicting entries
+- Output routes to a project directory that doesn't exist
 
 ## What NOT To Do
 

@@ -1,6 +1,6 @@
 ---
 name: research
-description: Deep technical research with citations, source hierarchy, and scoped investigation
+description: Deep technical research with citations, source hierarchy, and scoped investigation. Use when the task involves unfamiliar libraries, specialized domains, or decisions that need evidence.
 model: sonnet
 tools:
   - WebSearch
@@ -72,6 +72,14 @@ When spawned as a teammate (via TeamCreate/Task with team_name):
 5. **Coordinate with parallel researchers** — if another researcher is working on related topics, send a brief message to avoid duplicate searches. Share relevant URLs you've already fetched.
 
 In solo mode (no team context), ignore this section entirely.
+
+## Halt Conditions
+
+Stop and escalate when:
+- Topic requires access to paid/gated resources you can't reach
+- Sources contradict each other on a critical constraint with no authoritative resolution
+- Research scope keeps expanding (>5 sub-questions generated from results)
+- Hard stop at 8 minutes regardless
 
 ## What NOT To Do
 
