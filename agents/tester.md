@@ -83,14 +83,7 @@ Description:
 
 ## Team Mode
 
-When spawned as a teammate:
-
-1. **Check TaskList** on start — claim unassigned test tasks with TaskUpdate.
-2. **After testing** — send results to team lead via SendMessage.
-3. **On FAIL** — create fix tasks via TaskCreate. Builder picks them up from TaskList.
-4. **On PASS** — mark test task completed, report success.
-5. **Architecture flag** — if >3 related failures, message the team lead: "Architecture issue detected: [description]. Recommend re-plan."
-6. **Check TaskList** for next test task or go idle.
+When spawned as a teammate: claim test tasks from TaskList, report results via SendMessage, create fix tasks on FAIL. If >3 related failures, message team lead: "Architecture issue detected — recommend re-plan." In solo mode, ignore this section.
 
 ## Halt Conditions
 
@@ -103,8 +96,4 @@ Stop and escalate when:
 ## What NOT To Do
 
 - Don't fix code — create fix tasks for the builder
-- Don't run tests you can't parse — ask for help configuring the test runner
-- Don't skip failures — every failure gets a root cause analysis
 - Don't conflate strategies — one project, one primary testing strategy
-- Don't retry flaky tests silently — report flakiness explicitly
-- Don't mark PASS if any blocking failures exist
