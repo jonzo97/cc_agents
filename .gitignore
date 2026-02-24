@@ -66,4 +66,5 @@ global/
 .syncignore
 research/active/
 research/archive/
+research/prompts/
 docs/research-automation-best-practices.md
