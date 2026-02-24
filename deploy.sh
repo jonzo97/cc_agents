@@ -6,7 +6,8 @@
 #   ./deploy.sh --teams        # Deploy team workflow presets
 #   ./deploy.sh --hooks        # Deploy quality gate hooks
 #   ./deploy.sh --commands     # Deploy slash commands (pipeline, team-status)
-#   ./deploy.sh --all          # Deploy everything (agents + teams + hooks + commands)
+#   ./deploy.sh --skills       # Deploy skills
+#   ./deploy.sh --all          # Deploy everything
 #   ./deploy.sh --clean        # Remove agents from target not in source
 #   ./deploy.sh --dry-run      # Preview without changes
 
@@ -17,16 +18,19 @@ AGENTS_SRC="$SCRIPT_DIR/agents"
 TEAMS_SRC="$SCRIPT_DIR/teams"
 HOOKS_SRC="$SCRIPT_DIR/hooks"
 COMMANDS_SRC="$SCRIPT_DIR/commands"
+SKILLS_SRC="$SCRIPT_DIR/skills"
 AGENTS_DST="$HOME/.claude/agents"
 TEAMS_DST="$HOME/.claude/teams-presets"
 HOOKS_DST="$HOME/.claude/hooks"
 COMMANDS_DST="$HOME/.claude/commands"
+SKILLS_DST="$HOME/.claude/skills"
 
 DRY_RUN=false
 CLEAN=false
 TEAMS=false
 HOOKS=false
 COMMANDS=false
+SKILLS=false
 
 for arg in "$@"; do
     case "$arg" in
@@ -35,7 +39,8 @@ for arg in "$@"; do
         --teams)     TEAMS=true ;;
         --hooks)     HOOKS=true ;;
         --commands)  COMMANDS=true ;;
-        --all)       TEAMS=true; HOOKS=true; COMMANDS=true ;;
+        --skills)    SKILLS=true ;;
+        --all)       TEAMS=true; HOOKS=true; COMMANDS=true; SKILLS=true ;;
         *)           echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
@@ -47,6 +52,7 @@ echo "Source: $AGENTS_SRC"
 [ "$TEAMS" = true ]    && echo "Teams:    $TEAMS_SRC → $TEAMS_DST"
 [ "$HOOKS" = true ]    && echo "Hooks:    $HOOKS_SRC → $HOOKS_DST"
 [ "$COMMANDS" = true ] && echo "Commands: $COMMANDS_SRC → $COMMANDS_DST"
+[ "$SKILLS" = true ]   && echo "Skills:   $SKILLS_SRC → $SKILLS_DST"
 echo "Target: $AGENTS_DST"
 echo ""
 
@@ -167,6 +173,31 @@ if [ "$COMMANDS" = true ] && [ -d "$COMMANDS_SRC" ]; then
         else
             cp "$cmd_file" "$COMMANDS_DST/$cmd_name"
             echo "  Deployed: $cmd_name ($lines lines)"
+        fi
+    done
+fi
+
+# Deploy skills
+if [ "$SKILLS" = true ] && [ -d "$SKILLS_SRC" ]; then
+    echo ""
+    echo "--- Skills ---"
+    if [ "$DRY_RUN" = false ]; then
+        mkdir -p "$SKILLS_DST"
+    fi
+    for skill_dir in "$SKILLS_SRC"/*/; do
+        [ -d "$skill_dir" ] || continue
+        skill_name=$(basename "$skill_dir")
+        file_count=$(find "$skill_dir" -type f | wc -l)
+        if [ "$DRY_RUN" = true ]; then
+            if diff -rq "$skill_dir" "$SKILLS_DST/$skill_name" >/dev/null 2>&1; then
+                echo "  $skill_name/ ($file_count files) — unchanged"
+            else
+                echo "  $skill_name/ ($file_count files) — CHANGED"
+            fi
+        else
+            mkdir -p "$SKILLS_DST/$skill_name"
+            cp -r "$skill_dir"* "$SKILLS_DST/$skill_name/"
+            echo "  Deployed: $skill_name/ ($file_count files)"
         fi
     done
 fi
