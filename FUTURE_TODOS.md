@@ -4,11 +4,6 @@ Captured improvements and research tasks for future sessions.
 
 ---
 
-## Recipes
-
-- [ ] **Fill out recipe book** — Docker Compose, lighthouse, npm/pip audit, act
-- [ ] **Add recipes for common RAG patterns** — chunking strategies, embedding selection, retrieval patterns
-
 ## Deep Research
 
 - [ ] **Research deep-research automation** — Investigate DeerFlow, LangChain, and other frameworks for automating the Gemini Deep Research handoff. Goal: reduce the manual copy-paste step. Check if Gemini has programmatic access yet, or if DeerFlow/LangChain can orchestrate multi-model research pipelines.
@@ -21,7 +16,7 @@ Captured improvements and research tasks for future sessions.
 
 ## Dashboard
 
-- [ ] **Update dashboard** — Add recipes section, cross-project patterns, deep research workflow. Reflect current file structure.
+- [ ] **Update dashboard** — Reflect current file structure (skills, 7 agents, no Serena variants). Add cross-project patterns, deep research workflow.
 
 ## Context Estimator
 
@@ -29,4 +24,4 @@ Captured improvements and research tasks for future sessions.
 
 ## README
 
-- [ ] **Update README** — Add recipes, new docs, future todos reference. Keep it share-worthy.
+- [x] ~~**Update README**~~ — Done (v4.3). Recipes consolidated to skills, agent count updated, Serena refs removed.

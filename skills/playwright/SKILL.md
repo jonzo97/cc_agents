@@ -1,3 +1,8 @@
+---
+name: playwright
+description: Browser automation for visual verification, testing, and scraping using Playwright
+---
+
 # Playwright
 
 Browser automation for visual verification, testing, and scraping. The #1 tool for autonomous web project work.

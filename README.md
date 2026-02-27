@@ -1,6 +1,6 @@
 # cc_agents — Claude Code Multi-Agent Orchestration
 
-Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Five specialized agents, three team presets, quality gate hooks, direct-code recipes, and an orchestrator guide — all designed for Opus 4.6's native orchestration capabilities.
+Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Seven specialized agents, three team presets, quality gate hooks, accumulated skills, and an orchestrator guide — all designed for Opus 4.6's native orchestration capabilities.
 
 **[View the Architecture Dashboard](docs/dashboard.html)**
 
@@ -8,9 +8,9 @@ Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/clau
 
 1. **Lean but complete.** Every line in an agent definition earns its place. Agents are 80-120 lines, not 500.
 2. **Trust the model.** Opus 4.6 handles orchestration, tool selection, and error recovery natively. Agents add focused guidance, not capability.
-3. **Tool-agnostic base.** Base agents work with standard Claude Code tools. Serena-enhanced variants available for LSP-enabled projects.
+3. **Tool-agnostic base.** Base agents work with standard Claude Code tools.
 4. **Research by default.** Domain research is opt-out, not opt-in. A 5-minute research phase costs ~10K tokens; debugging domain gaps costs 10-50x that.
-5. **Recipes over MCP.** For <20 tools, skip MCP servers entirely. Direct Python/Bash recipes at zero context cost.
+5. **Skills with zero context cost.** Reusable workflow skills loaded on demand via progressive disclosure. No tokens spent until the skill is needed.
 6. **Test before deploy.** `init.sh` installs into a project for testing. Only promote to globals when proven.
 
 ## Agents
@@ -22,8 +22,8 @@ Lean agent definitions for [Claude Code](https://docs.anthropic.com/en/docs/clau
 | **Planner** | Opus | Strategic planning, SMART task decomposition, risk assessment |
 | **Builder** | Sonnet | Implementation with TDD, error recovery, checkpointing |
 | **Reviewer** | Haiku | Code review against plan acceptance criteria |
-
-Scout, Builder, and Reviewer have **Serena variants** (`agents/serena/`) with LSP-powered semantic editing and analysis for projects with Serena configured.
+| **Tester** | Sonnet | Test execution, failure analysis, fix task creation |
+| **Research-Liaison** | Sonnet | Squeeze raw research output, route insights, update tracker |
 
 ## Pipeline
 
@@ -50,27 +50,19 @@ Run it with `/pipeline <task>` or configure manually with team presets.
 | **Build-Review Loop** | Builder + Reviewer | Implementation with quality gates — build, review, fix until PASS |
 | **Parallel Research** | Scout×N + Research×N → Planner | Discovery-heavy tasks needing multiple perspectives |
 
-## Recipes — Direct Code, No MCP
+## Skills — Accumulated Expertise
 
-For tools with fewer than 20 functions, skip MCP servers entirely. Agents read a recipe (~50 lines), write code, and run it via Bash. Zero tool-definition overhead.
+Reusable workflow skills loaded on demand. Zero context cost until needed — only the skill name and description are visible until Claude loads the full instructions.
 
-| Recipe | What It Replaces |
-|--------|-----------------|
-| **playwright** | @playwright/mcp server |
-| **chromadb** | ChromaDB MCP server |
-| **jq-python** | jq CLI or JSON MCP tools |
-| **httpie-curl** | HTTP/REST MCP servers |
-| **sqlite** | SQLite MCP server |
+| Skill | What It Provides |
+|-------|-----------------|
+| **deep-research** | Orchestrate prompt → Gemini → squeeze → route pipeline |
+| **chromadb** | Vector database patterns for RAG, semantic search, knowledge bases |
+| **cozodb** | Knowledge graph patterns — GraphRAG, episodic memory, markdown ingestion |
+| **playwright** | Browser automation for visual verification, testing, scraping |
+| **google-drive** | Sync files between Google Drive and local directories via rclone |
 
-Each recipe includes install commands, common patterns, and gotchas. See `recipes/_PATTERN.md` for the template.
-
-**When to use what:**
-
-| Approach | Context Cost | Best For |
-|----------|-------------|----------|
-| Direct Python recipe | ~0 tokens (read on demand) | <20 tools, simple operations |
-| Code execution via MCP | ~500 tokens/tool | Complex stateful operations |
-| Full MCP server | 7-17K tokens | 20+ tools, shared across projects |
+Each skill includes install commands, common patterns, and gotchas. Bundled skills (like cozodb) include multiple linked files for progressive disclosure.
 
 ## Smarter Orchestration
 
@@ -150,7 +142,8 @@ cc_agents/
 │   ├── planner.md         # Task decomposition
 │   ├── builder.md         # Implementation
 │   ├── reviewer.md        # Code review
-│   └── serena/            # LSP-enhanced variants
+│   ├── tester.md          # Test execution & analysis
+│   └── research-liaison.md # Research squeeze & routing
 ├── teams/                 # Team preset configurations
 │   ├── full-pipeline.md
 │   ├── build-review-loop.md
@@ -164,13 +157,12 @@ cc_agents/
 │   ├── cross-project-patterns.md  # Multi-project coordination
 │   ├── deep-research-workflow.md  # Research pipeline
 │   └── dashboard.html             # Visual architecture overview
-├── recipes/               # Direct-code tool patterns (no MCP)
-│   ├── _PATTERN.md        # Recipe template
-│   ├── playwright.md      # Browser automation
-│   ├── chromadb.md        # Vector DB / RAG
-│   ├── jq-python.md       # JSON processing
-│   ├── httpie-curl.md     # HTTP requests
-│   └── sqlite.md          # Local database
+├── skills/                # Reusable workflow skills (zero context cost)
+│   ├── deep-research/     # Research pipeline orchestration
+│   ├── chromadb/          # Vector DB / RAG patterns
+│   ├── cozodb/            # Knowledge graph patterns (bundled)
+│   ├── playwright/        # Browser automation
+│   └── google-drive/      # Google Drive sync via rclone
 ├── research/              # Deep research prompts and outputs
 │   └── prompts/           # Pre-written research prompts
 ├── hooks/                 # Quality gate hooks
@@ -198,6 +190,7 @@ Projects with `init.sh` applied use experimental agents. Without it, they fall b
 
 | Version | Highlights |
 |---------|------------|
+| **v4.3** | Recipes consolidated to skills, 7 agents (added tester + research-liaison), FAE skills brainstorm, Serena variants removed |
 | **v4.2** | Smarter orchestration, recipes, cross-project patterns, deep research workflow |
 | **v4.1** | Field test feedback — domain knowledge, smoke tests, orchestrator guide |
 | **v4** | Research-driven agent rewrite for Opus 4.6. Team-aware agents, presets, Ralph v2, quality gates, pipeline command. |

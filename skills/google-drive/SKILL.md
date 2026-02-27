@@ -1,3 +1,8 @@
+---
+name: google-drive
+description: Sync files between Google Drive and local directories using rclone
+---
+
 # Google Drive (via rclone)
 
 Sync files between Google Drive and local directories. Used by the research-liaison agent to pull Gemini Deep Research outputs.
@@ -9,7 +14,7 @@ sudo apt install rclone  # or: curl https://rclone.org/install.sh | sudo bash
 
 # One-time setup:
 rclone config
-# Choose: n → name: gdrive → type: drive → client_id: blank → scope: 1 → rest blank → auto config: y
+# Choose: n > name: gdrive > type: drive > client_id: blank > scope: 1 > rest blank > auto config: y
 ```
 
 ## Quick Patterns
@@ -47,7 +52,7 @@ rclone check gdrive:"AI Research/pending/" research/active/ --one-way
 ## Gotchas
 
 - **WSL OAuth**: Browser may not open. Install `wslview` (`sudo apt install wslu`) or copy the auth URL and paste token manually.
-- **Google Docs ≠ files**: Docs are virtual — rclone exports on download. Use `--drive-export-formats md`. Native `.md` uploads work fine.
+- **Google Docs are not files**: Docs are virtual — rclone exports on download. Use `--drive-export-formats md`. Native `.md` uploads work fine.
 - **Rate limits**: Google caps ~10 req/s. Add `--tpslimit 8` for large syncs (50+ files).
 - **Shared drives**: Add `--drive-shared-with-me` to see shared files.
 

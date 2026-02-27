@@ -116,6 +116,29 @@ Currently unnecessary (<20 tools) but future-proofed.
 - Web development agents (frontend, API, database)
 - Data science agents (notebook, pipeline, model evaluation)
 
+#### FAE Skills by Product Domain
+Novel angle: most Claude Code skills target web developers. FAEs have equally repetitive, reference-heavy workflows that map naturally to skills.
+
+**Product domains:** FPGA (5 skills exist), Ethernet (register config, PHY debug, TSN), MCU (peripheral config, clock calc, power estimation), Analog (power design, motor drive, part selection), Security (ATECC608 provisioning, secure boot, TLS debug), POE (power budget, classification), PCIE (topology, link debug), USB (PD policy, descriptors).
+
+**Cross-cutting skills (highest ROI):** errata-check, customer-debug, appnote-search, schematic-review, part-select, design-review, thermal-analysis.
+
+**Priority:** errata-check and customer-debug are Tier 1 — every design needs them, data is public, time savings are significant.
+
+See `docs/fae-skills-brainstorm.md` for the full brainstorm with priority ranking.
+
+### Skills Ecosystem Exploration
+Research the broader skills ecosystem beyond this project:
+- **vercel-labs/skills** — find-skills discovery pattern
+- **skillsmp.com** — Skills marketplace
+- **osmagent.com** — Agent skills platform
+- **mcpmarket.com/tools/skills** — MCP marketplace skills section
+- **Anthropic marketplace** — Official skill/tool marketplace
+
+Key questions: What skill patterns are domain-agnostic? How does skill discovery work at scale? Are marketplace skills useful or mostly demos? How do EE/CE workflows map onto patterns designed for SWE?
+
+Research prompt queued in cross-project inbox. Route findings to cc_agents (patterns to adopt) and second-brain (ecosystem knowledge).
+
 ## Rejected / Deferred
 
 ### Orchestrator Agent

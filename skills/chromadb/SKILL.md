@@ -1,3 +1,8 @@
+---
+name: chromadb
+description: Vector database patterns for RAG, semantic search, and knowledge bases using ChromaDB
+---
+
 # ChromaDB
 
 Embedding database for RAG, semantic search, and knowledge bases. Runs locally, no server needed.
