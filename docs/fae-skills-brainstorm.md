@@ -1,6 +1,6 @@
 # FAE Skills Brainstorm
 
-Candidate Claude Code skills for Field Application Engineers working across Microchip product lines. Organized by product domain with cross-cutting skills at the end.
+Candidate Claude Code skills for Field Application Engineers working across semiconductor product lines. Organized by product domain with cross-cutting skills at the end.
 
 **Existing FPGA skills** (proof-of-concept): fpga-error, libero-build, fpga-search, synth-log-miner, fpga-ip-params
 
