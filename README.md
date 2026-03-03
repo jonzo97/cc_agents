@@ -114,7 +114,6 @@ Shell hooks that enforce quality during agent runs:
 ### Install agents into a project
 ```bash
 ./init.sh ~/my-project                    # Base agents
-./init.sh ~/my-project --serena           # With Serena LSP variants
 ./init.sh ~/my-project --dry-run          # Preview changes
 ./init.sh ~/my-project --remove           # Revert to defaults
 ```
