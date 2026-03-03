@@ -131,6 +131,74 @@ Shell hooks that enforce quality during agent runs:
 /pipeline plan-only Refactor the database layer
 ```
 
+## Using This In Your Projects
+
+This is my personal agent setup. It works well for my workflow, but yours is different — different languages, frameworks, team size, and pain points. Here's how to make it yours.
+
+### Option 1: Cherry-pick individual agents
+
+Browse the `agents/` directory and copy just the ones you need into your project's `.claude/agents/`. A solo developer might only want `builder.md` and `tester.md`. A team lead might grab `planner.md` and `reviewer.md`.
+
+### Option 2: Deploy everything and customize
+
+```bash
+git clone https://github.com/jonzo97/cc_agents.git
+cd cc_agents
+./init.sh ~/your-project --all
+```
+
+Then edit the agents in `~/your-project/.claude/agents/` to fit your workflow. Delete what you don't need, tweak what you keep.
+
+### Option 3: Let Claude adapt it for you
+
+Clone the repo and run `init.sh` to install the agents into your project. Then paste the prompt below into Claude Code **while in your project directory**. It will explore your codebase, ask you a few questions, and customize the agents to fit.
+
+```bash
+git clone https://github.com/jonzo97/cc_agents.git
+cd cc_agents && ./init.sh ~/your-project --all
+cd ~/your-project
+```
+
+Then paste this into Claude Code:
+
+````
+I have cc_agents installed in this project (.claude/agents/). I need you to adapt these
+agents to fit THIS project. Here's what to do:
+
+1. EXPLORE this project:
+   - What language(s) and frameworks are used?
+   - What's the test setup (framework, coverage, where do tests live)?
+   - What build tools and CI/CD are in place?
+   - How big is the codebase (rough file count, key directories)?
+   - Are there existing patterns in CLAUDE.md or .claude/ config?
+
+2. ASK ME these questions (wait for my answers before proceeding):
+   - Do you typically work solo or with a team of agents? How many parallel builders
+     make sense for your projects?
+   - What are your biggest pain points — slow reviews, flaky tests, unclear plans,
+     missing research?
+   - Do you use any specialized tools (databases, browser testing, external APIs)
+     that agents should know about?
+   - Are there project conventions agents must follow (commit style, branch naming,
+     test patterns, code style)?
+
+3. Based on my answers, CUSTOMIZE the agents:
+   - Remove agents I won't use (e.g., research-liaison for small projects)
+   - Edit agent definitions in .claude/agents/ to reference this project's actual
+     tech stack, test commands, and patterns
+   - Adjust model tiers if needed (e.g., Haiku for simple projects, Opus for
+     complex ones)
+   - Update team presets to match my workflow
+   - Remove skills I don't need, suggest new ones I might want
+
+4. Generate a CLAUDE.md snippet (or update the existing one) with:
+   - Project-specific agent guidance
+   - Which agents to use for common tasks in this project
+   - Any conventions agents should follow
+
+Show me a summary of changes before applying them.
+````
+
 ## Project Structure
 
 ```
