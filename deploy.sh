@@ -1,6 +1,10 @@
 #!/bin/bash
 # Deploy agents from cc_agents to ~/.claude/agents/
 #
+# NOTE: For the maintainer, ~/.claude/ is now the source of truth (private repo).
+# This script is kept for users who clone cc_agents and want to deploy to their
+# own ~/.claude/. The maintainer uses the publish-to-cc-agents skill instead.
+#
 # Usage:
 #   ./deploy.sh                # Deploy base agents
 #   ./deploy.sh --teams        # Deploy team workflow presets

@@ -1,7 +1,18 @@
 # cc_agents — Project Instructions
 
 ## What This Is
-R&D repo for Claude Code agent definitions. Agents are defined in `agents/*.md` and deployed to `~/.claude/agents/` via `./deploy.sh`.
+Public distribution of Claude Code agent definitions. The source of truth is `~/.claude/` (private repo). This repo is a curated snapshot published via the `publish-to-cc-agents` skill.
+
+## Maintenance Flow
+```
+~/.claude/ (private, source of truth)
+    ↓ publish skill
+~/cc_agents/ (public, curated export)
+    ↓ init.sh
+~/my-project/.claude/agents/ (project overrides)
+```
+
+Edit agents in `~/.claude/agents/`. When ready to share publicly, run `/publish-to-cc-agents`.
 
 ## Key Principle
 With Opus 4.6, the main Claude instance IS the orchestrator. Agent definitions should be lean (50-100 lines), focused, and trust Claude's native capabilities. No ceremony, no over-engineering.
@@ -9,9 +20,14 @@ With Opus 4.6, the main Claude instance IS the orchestrator. Agent definitions s
 ## File Structure
 ```
 agents/          # Agent definitions (the deliverable)
-deploy.sh        # Deploy to ~/.claude/agents/
-test_scenarios/  # Sample codebases for testing
-archive/v2/      # Historical reference (old 6-agent system)
+skills/          # General-purpose skills (deep-research, agent-launcher)
+commands/        # Slash commands (pipeline, team-status)
+hooks/           # Quality gate hooks
+docs/            # Reference documentation
+templates/       # ADR template, etc.
+deploy.sh        # Deploy to ~/.claude/agents/ (for users who clone this repo)
+init.sh          # Install into a specific project for testing
+test_scenarios/  # Sample codebases for validation
 ```
 
 ## Cross-Project Inbox
